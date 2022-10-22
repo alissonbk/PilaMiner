@@ -27,7 +27,8 @@ import java.util.logging.Logger;
  */
 public class MineracaoService {
     public static final Logger LOG = Logger.getLogger(MineracaoService.class.getName());
-    private final BlockingQueue<PilaCoin> COIN_QUEUE = new LinkedBlockingQueue<>(10);
+    private static final int FILA_SIZE = 20;
+    private final BlockingQueue<PilaCoin> FILA_COIN = new LinkedBlockingQueue<>(FILA_SIZE);
 
     public Mineracao initialize() {
         Mineracao mineracao = null;
@@ -52,7 +53,7 @@ public class MineracaoService {
     }
 
     /**
-     * Tempo médio 280k tentativas a cada 20s
+     * Executando forma paralela o numero de tentativas aumentou da média de 280k a cada 20s para 300k a cada 20s
      * */
     public void miningLoop(Mineracao mineracao) {
         int numThreads = Runtime.getRuntime().availableProcessors();
@@ -71,17 +72,19 @@ public class MineracaoService {
         // PRODUCER
         return new Thread(() -> {
             while (true) {
-                final SecureRandom RANDOM = new SecureRandom();
-                PilaCoin pilaCoin = new PilaCoin();
-                pilaCoin.setDataCriacao(Date.from(Instant.now()));
-                pilaCoin.setIdCriador("alisson");
-                pilaCoin.setChaveCriador(mineracao.getPublicKey());
-                pilaCoin.setMagicNumber(new BigInteger(128, RANDOM).abs());
-                try {
-                    COIN_QUEUE.put(pilaCoin);
-                } catch (InterruptedException e) {
-                    LOG.warning("Falha ao adicionar pila coin a fila!");
-                    throw new RuntimeException(e);
+                if (FILA_COIN.size() < FILA_SIZE) {
+                    final SecureRandom RANDOM = new SecureRandom();
+                    PilaCoin pilaCoin = new PilaCoin();
+                    pilaCoin.setDataCriacao(Date.from(Instant.now()));
+                    pilaCoin.setIdCriador("alisson");
+                    pilaCoin.setChaveCriador(mineracao.getPublicKey());
+                    pilaCoin.setMagicNumber(new BigInteger(128, RANDOM).abs());
+                    try {
+                        FILA_COIN.put(pilaCoin);
+                    } catch (InterruptedException e) {
+                        LOG.warning("Falha ao adicionar pila coin a fila!");
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
@@ -93,9 +96,10 @@ public class MineracaoService {
     private Runnable pilaCoinConsumer(Mineracao mineracao) {
         return new Thread(() -> {
             while (true) {
-                mineracao.setNumTentativas(mineracao.getNumTentativas()+1);
+                if (FILA_COIN.size() > 0) {
+                    mineracao.setNumTentativas(mineracao.getNumTentativas()+1);
                     try {
-                        PilaCoin pilaCoin = COIN_QUEUE.take();
+                        PilaCoin pilaCoin = FILA_COIN.take();
                         String pilaJson = this.generateJSON(pilaCoin);
                         BigInteger numHash = new BigInteger(this.generateHash(pilaJson)).abs();
 
@@ -123,7 +127,7 @@ public class MineracaoService {
                                 System.out.println("Número de tentativas: " + mineracao.getNumTentativas());
                                 System.out.println("Numero da Hash gerada: " + numHash);
                                 System.out.println("Número da Dificuldade: " + mineracao.getDIFICULDADE());
-                                System.out.println("Tamanho da lista: " + COIN_QUEUE.size());
+                                System.out.println("Tamanho da lista: " + FILA_COIN.size());
                                 System.out.println("---------------------------------------");
                                 mineracao.setTempoInicialTentativa(0);
                                 mineracao.setTempoInicialTentativa(System.currentTimeMillis());
@@ -135,6 +139,8 @@ public class MineracaoService {
                         throw new RuntimeException(e);
                     }
                 }
+            }
+
         });
 
     }
