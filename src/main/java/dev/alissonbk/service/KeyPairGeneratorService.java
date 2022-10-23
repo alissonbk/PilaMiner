@@ -32,26 +32,28 @@ public class KeyPairGeneratorService {
             } catch (NoSuchAlgorithmException e) {
                 LOG.warning("Falha ao gerar par de chaves!!!");
                 e.printStackTrace();
-            }
+            } finally {
+                if (keyPair == null) {
+                    LOG.warning("KeyPair é nulo!!");
+                    throw new RuntimeException("KeyPair é nulo!!");
+                } else {
+                    try {
+                        Files.write(Path.of(PUBLIC_KEY_RELATIVE_PATH), keyPair.getPrivate().getEncoded());
+                        System.out.println("Public key: \t" + Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()));
 
-            if (keyPair == null) {
-                LOG.warning("KeyPair é nulo!!");
-                throw new RuntimeException("KeyPair é nulo!!");
-            } else {
-                try {
-                    Files.write(Path.of(PUBLIC_KEY_RELATIVE_PATH), keyPair.getPrivate().getEncoded());
-                    System.out.println("Public key: \t" + Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()));
+                        Files.write(Path.of(PRIVATE_KEY_RELATIVE_PATH), keyPair.getPrivate().getEncoded());
+                        System.out.println("Private key: \t" + Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded()));
 
-                    Files.write(Path.of(PRIVATE_KEY_RELATIVE_PATH), keyPair.getPrivate().getEncoded());
-                    System.out.println("Private key: \t" + Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded()));
-
-                    LOG.info("Os arquivos com a chave publica e privada foram gerados e salvos com sucesso! " +
-                            "\n Public: " + PUBLIC_KEY_RELATIVE_PATH + "\n Private: " + PRIVATE_KEY_RELATIVE_PATH);
-                } catch (IOException e) {
-                    LOG.warning("Falha ao salvar arquivos com as chaves");
-                    e.printStackTrace();
+                        LOG.info("Os arquivos com a chave publica e privada foram gerados e salvos com sucesso! " +
+                                "\n Public: " + PUBLIC_KEY_RELATIVE_PATH + "\n Private: " + PRIVATE_KEY_RELATIVE_PATH);
+                    } catch (IOException e) {
+                        LOG.warning("Falha ao salvar arquivos com as chaves");
+                        e.printStackTrace();
+                    }
                 }
             }
+
+
         }
 
 
