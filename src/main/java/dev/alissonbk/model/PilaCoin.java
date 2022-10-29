@@ -17,7 +17,7 @@ public class PilaCoin implements Serializable {
     private Date dataCriacao;
     private byte[] chaveCriador;
     private byte[] assinaturaMaster;
-    private BigInteger magicNumber; //utilizar precisão de 128 bits
+    private BigInteger nonce; //utilizar precisão de 128 bits
 
     @Override
     public boolean equals(Object o) {
@@ -27,13 +27,13 @@ public class PilaCoin implements Serializable {
         PilaCoin pilaCoin = (PilaCoin) o;
 
         if (!dataCriacao.equals(pilaCoin.dataCriacao)) return false;
-        return magicNumber.equals(pilaCoin.magicNumber);
+        return nonce.equals(pilaCoin.nonce);
     }
 
     @Override
     public int hashCode() {
         int result = dataCriacao.hashCode();
-        result = 31 * result + magicNumber.hashCode();
+        result = 31 * result + nonce.hashCode();
         return result;
     }
 }

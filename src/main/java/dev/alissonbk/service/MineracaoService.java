@@ -2,21 +2,18 @@ package dev.alissonbk.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.LinkedNode;
 import dev.alissonbk.model.Mineracao;
 import dev.alissonbk.model.PilaCoin;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.*;
@@ -28,46 +25,28 @@ import java.util.logging.Logger;
  */
 public class MineracaoService {
     public static final Logger LOG = Logger.getLogger(MineracaoService.class.getName());
+    // private final Semaphore SEMAFORO_PRODUCER = new Semaphore((this.numThreads*20)/100);
+    // private final Semaphore SEMAFORO_CONSUMER = new Semaphore((this.numThreads*80)/100);
     private static final int FILA_SIZE = 20;
     private final BlockingQueue<PilaCoin> FILA_COIN = new LinkedBlockingQueue<>(FILA_SIZE);
     private int vezesPilhaVazia = 0;
     private final int numThreads = Runtime.getRuntime().availableProcessors();
-    private final Semaphore SEMAFORO_PRODUCER = new Semaphore((this.numThreads*80)/100);
-    private final Semaphore SEMAFORO_CONSUMER = new Semaphore((this.numThreads*20)/100);
+    private Mineracao mineracao;
 
-    public Mineracao initialize() {
-        Mineracao mineracao = null;
-        // pega a chave publica e privada do arquivo
-        try {
-            byte[] publicKey = Files.readAllBytes(Path.of(KeyPairGeneratorService.PUBLIC_KEY_RELATIVE_PATH));
-            LOG.info("Chave publica Base64: " + Base64.getEncoder().encodeToString(publicKey));
-
-            byte[] privateKey = Files.readAllBytes(Path.of(KeyPairGeneratorService.PRIVATE_KEY_RELATIVE_PATH));
-            LOG.info("Chave privada Base64: " + Base64.getEncoder().encodeToString(privateKey));
-
-            mineracao = new Mineracao(publicKey, privateKey);
-        } catch (IOException e) {
-            LOG.warning("Falha ao pegar chaves dos arquivos!!!");
-            e.printStackTrace();
-        }
-
-        if (mineracao == null) {
-            throw new RuntimeException("Falha ao inicializar mineracao!");
-        }
-        return mineracao;
+    public MineracaoService(Mineracao mineracao) {
+        this.mineracao = mineracao;
     }
+
+
 
     /**
      * Executando forma paralela o numero de tentativas aumentou da média de 280k a cada 20s para 300k a cada 20s
      * */
-    public void miningLoop(Mineracao mineracao) {
+    public void miningLoop() {
         System.out.println("Número total de threads: " + numThreads);
         ExecutorService executor = Executors.newCachedThreadPool();
-        executor.execute(this.pilaCoinProducer(mineracao));
-        executor.execute(this.pilaCoinConsumer(mineracao));
-//        ExecutorService executor = Executors.newFixedThreadPool(6);
-//        executor.execute(this.pilaCoinProducer(mineracao));
-//        executor.execute(this.pilaCoinConsumer(mineracao));
+        executor.execute(this.pilaCoinProducer(this.mineracao));
+        executor.execute(this.pilaCoinConsumer(this.mineracao));
     }
 
     /**
@@ -82,20 +61,20 @@ public class MineracaoService {
                     Thread.yield();
                 } else {
                     if (FILA_COIN.size() < FILA_SIZE) {
-                        this.producerAquire();
+                        // this.producerAquire();
                         final SecureRandom RANDOM = new SecureRandom();
                         PilaCoin pilaCoin = new PilaCoin();
                         pilaCoin.setDataCriacao(Date.from(Instant.now()));
                         pilaCoin.setIdCriador("alisson");
                         pilaCoin.setChaveCriador(mineracao.getPublicKey());
-                        pilaCoin.setMagicNumber(new BigInteger(128, RANDOM).abs());
+                        pilaCoin.setNonce(new BigInteger(128, RANDOM).abs());
                         try {
                             FILA_COIN.add(pilaCoin);
                         } catch (RuntimeException e) {
                             LOG.warning("Falha ao adicionar pila coin a fila!");
                             throw new RuntimeException(e);
                         } finally {
-                            SEMAFORO_PRODUCER.release();
+                          //  SEMAFORO_PRODUCER.release();
                         }
                     }
                 }
@@ -111,7 +90,7 @@ public class MineracaoService {
             while (true) {
                 if (!FILA_COIN.isEmpty()) {
                     mineracao.setNumTentativas(mineracao.getNumTentativas()+1);
-                    consumerAquire();
+                    // consumerAquire();
                     try {
                         PilaCoin pilaCoin = FILA_COIN.poll();
                         String pilaJson = this.generateJSON(pilaCoin);
@@ -153,7 +132,7 @@ public class MineracaoService {
                         Thread.currentThread().interrupt();
                         throw new RuntimeException(e);
                     }finally {
-                        SEMAFORO_CONSUMER.release();
+                        // SEMAFORO_CONSUMER.release();
                     }
                 } else {
                     vezesPilhaVazia++;
@@ -199,22 +178,21 @@ public class MineracaoService {
         return hash;
     }
 
-    private void producerAquire() {
-        try {
-            SEMAFORO_PRODUCER.acquire();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void producerAquire() {
+//        try {
+//            SEMAFORO_PRODUCER.acquire();
+//        }catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    private void consumerAquire() {
-        try {
-            SEMAFORO_CONSUMER.acquire();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-
+//    private void consumerAquire() {
+//        try {
+//            SEMAFORO_CONSUMER.acquire();
+//        }catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
 }
