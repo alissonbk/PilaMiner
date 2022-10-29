@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.stomp.StompSessionHandler;
 
 import java.lang.reflect.Type;
 
+
 public class WebSocketSessionHandler implements StompSessionHandler {
     @Override
     public void afterConnected(StompSession stompSession, StompHeaders stompHeaders) {

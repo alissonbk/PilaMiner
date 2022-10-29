@@ -3,6 +3,7 @@ package dev.alissonbk.service;
 
 import dev.alissonbk.model.Mineracao;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+@Service
 public class KeyPairGeneratorService {
 
     public static final String PUBLIC_KEY_RELATIVE_PATH = "src/main/resources/keyfiles/publicKey.txt";

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.alissonbk.model.Mineracao;
 import dev.alissonbk.model.PilaCoin;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 /**
  * USAR ABS para valor absoluto no BigInteger (onde tem random utilizar .abs())
  */
+@Service
 public class MineracaoService {
     public static final Logger LOG = Logger.getLogger(MineracaoService.class.getName());
     // private final Semaphore SEMAFORO_PRODUCER = new Semaphore((this.numThreads*20)/100);
