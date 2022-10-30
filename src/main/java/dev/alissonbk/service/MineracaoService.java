@@ -44,8 +44,12 @@ public class MineracaoService {
     /**
      * Executando forma paralela o numero de tentativas aumentou da média de 280k a cada 20s para 300k a cada 20s
      * */
-    public void miningLoop() {
+    public void miningLoop() throws InterruptedException {
         System.out.println("Número total de threads: " + numThreads);
+        while (Mineracao.DIFICULDADE == null) {
+            Thread.sleep(500);
+        }
+        Thread.yield();
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.execute(this.pilaCoinProducer(this.mineracao));
         executor.execute(this.pilaCoinConsumer(this.mineracao));
@@ -58,7 +62,7 @@ public class MineracaoService {
     private Thread pilaCoinProducer(Mineracao mineracao) {
         // PRODUCER
         return new Thread(() -> {
-            while (true) {
+             while (true) {
                 if (FILA_COIN.size() == FILA_SIZE) {
                     Thread.yield();
                 } else {
@@ -76,7 +80,7 @@ public class MineracaoService {
                             LOG.warning("Falha ao adicionar pila coin a fila!");
                             throw new RuntimeException(e);
                         } finally {
-                          //  SEMAFORO_PRODUCER.release();
+                            //  SEMAFORO_PRODUCER.release();
                         }
                     }
                 }
@@ -99,7 +103,7 @@ public class MineracaoService {
                         BigInteger numHash = new BigInteger(this.generateHash(pilaJson)).abs();
 
                         // Tentativas
-                        if (numHash.compareTo(mineracao.getDIFICULDADE()) < 0) {
+                        if (numHash.compareTo(Mineracao.DIFICULDADE) < 0) {
                             mineracao.setNumMineracoes(mineracao.getNumMineracoes() + 1);
                             System.out.println("#####################MINEROU######################\n");
                             System.out.println("Numero de Mineracoes: " + mineracao.getNumMineracoes());
@@ -107,7 +111,7 @@ public class MineracaoService {
                             System.out.println("Tempo demorado: " +
                                     (System.currentTimeMillis() - mineracao.getTempoInicialMineracao()) + "ms");
                             System.out.println("Numero da Hash gerada: " + numHash);
-                            System.out.println("Número da Dificuldade: " + mineracao.getDIFICULDADE());
+                            System.out.println("Número da Dificuldade: " + Mineracao.DIFICULDADE);
                             System.out.println("###################################################\n");
 
                             // Reseta tentativas e tempodemorado
@@ -121,9 +125,9 @@ public class MineracaoService {
                                 System.out.println("Número de Mineracoes: " + mineracao.getNumMineracoes());
                                 System.out.println("Número de tentativas: " + mineracao.getNumTentativas());
                                 System.out.println("Numero da Hash gerada: " + numHash);
-                                System.out.println("Número da Dificuldade: " + mineracao.getDIFICULDADE());
+                                System.out.println("Número da Dificuldade: " + Mineracao.DIFICULDADE);
                                 System.out.println("Tamanho da lista: " + FILA_COIN.size());
-                                System.out.println("Veses pilha vazia: "+ vezesPilhaVazia);
+                                System.out.println("Veses Fila vazia: "+ vezesPilhaVazia);
                                 System.out.println("---------------------------------------");
                                 mineracao.setTempoInicialTentativa(0);
                                 mineracao.setTempoInicialTentativa(System.currentTimeMillis());

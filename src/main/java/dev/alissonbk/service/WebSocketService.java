@@ -1,8 +1,9 @@
 package dev.alissonbk.service;
 
 import dev.alissonbk.handler.WebSocketSessionHandler;
-import org.springframework.messaging.converter.StringMessageConverter;
-import org.springframework.messaging.simp.stomp.StompSessionHandler;
+import dev.alissonbk.util.ServerEndpoints;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -12,14 +13,20 @@ import java.util.Scanner;
 @Service
 public class WebSocketService {
 
-    public void webSocketCreateConnection() {
-        StandardWebSocketClient client = new StandardWebSocketClient();
-        WebSocketStompClient stompClient = new WebSocketStompClient(client);
-        stompClient.setMessageConverter(new StringMessageConverter());
-        StompSessionHandler sessionHandler = new WebSocketSessionHandler();
-        stompClient.connect("wss://srv-ceesp.proj.ufsm.br:8097/websocket/websocket", sessionHandler);
-        //stompClient.connect("ws://192.168.81.101r:8080/websocket/websocket", sessionHandler);
-        new Scanner(System.in).nextLine();
+    private final WebSocketSessionHandler sessionHandler = new WebSocketSessionHandler();
+
+    public Boolean webSocketCreateConnection() {
+        try {
+            StandardWebSocketClient client = new StandardWebSocketClient();
+            WebSocketStompClient stompClient = new WebSocketStompClient(client);
+            stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+            stompClient.connect(ServerEndpoints.WEBSOCKET, sessionHandler);
+            return true;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
 
 }

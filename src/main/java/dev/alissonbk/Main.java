@@ -15,7 +15,7 @@ public class Main {
     private static final WebSocketService webSocketService = new WebSocketService();
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         keyPairGeneratorService.generateKeys(); // caso não exista gera chaves e salva no arquivo
         Mineracao mineracao = keyPairGeneratorService.getKeysFromFile(); // pega chaves do arquivo p obj mineracao
         System.out.println("\n");
@@ -27,10 +27,11 @@ public class Main {
             System.out.println("\n");
 
             //Connecta websocket
-            webSocketService.webSocketCreateConnection();
+            if (webSocketService.webSocketCreateConnection()) {
+                //loop mineração
+                mineracaoService.miningLoop();
+            }
 
-            //loop mineração
-            // mineracaoService.miningLoop();
         }else {
             System.out.println("Falha ao cadastrar usuario");
         }
