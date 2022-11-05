@@ -14,7 +14,7 @@ public class Mineracao {
     public static BigInteger DIFICULDADE;
     private final byte[] publicKey;
     private final byte[] privateKey;
-    private final long PRINT_TIME_MS = 10000;
+    public static final long PRINT_TIME_MS = 10000;
 
     public Mineracao(byte[] publicKey, byte[] privateKey) {
         //HEXSTRING = this.geraF(58);

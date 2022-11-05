@@ -1,22 +1,14 @@
 package dev.alissonbk.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.alissonbk.model.Mineracao;
 import dev.alissonbk.model.PilaCoin;
-import lombok.SneakyThrows;
+import dev.alissonbk.service.http.PilaCoinClientService;
+import dev.alissonbk.util.UtilGenerators;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.sql.Date;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -34,6 +26,8 @@ public class MineracaoService {
     private int vezesPilhaVazia = 0;
     private final int numThreads = Runtime.getRuntime().availableProcessors();
     private Mineracao mineracao;
+    private final PilaCoinClientService pilaCoinClientService = new PilaCoinClientService();
+    private List<PilaCoin> pilaCoinsRegistrados = new ArrayList<>();
 
     public MineracaoService(Mineracao mineracao) {
         this.mineracao = mineracao;
@@ -56,8 +50,7 @@ public class MineracaoService {
     }
 
     /**
-     * Este metodo gera o Magic Number logo é lento...
-     * Metodo PRODUCER
+     * Metodo PRODUCER (Gera o magic number ou nonce)
      * */
     private Thread pilaCoinProducer(Mineracao mineracao) {
         // PRODUCER
@@ -70,9 +63,8 @@ public class MineracaoService {
                         // this.producerAquire();
                         final SecureRandom RANDOM = new SecureRandom();
                         PilaCoin pilaCoin = new PilaCoin();
-                        pilaCoin.setDataCriacao(Date.from(Instant.now()));
-                        pilaCoin.setIdCriador("alisson");
-                        pilaCoin.setChaveCriador(mineracao.getPublicKey());
+                        pilaCoin.setDataCriacao(new java.util.Date());
+                        pilaCoin.setChaveCriador(Base64.getEncoder().encodeToString(mineracao.getPublicKey()));
                         pilaCoin.setNonce(new BigInteger(128, RANDOM).abs());
                         try {
                             FILA_COIN.add(pilaCoin);
@@ -89,7 +81,7 @@ public class MineracaoService {
     }
 
     /**
-     *
+     * CONSUMER (gera um hash do pila coin e verifica se é valido)
      * */
     private Thread pilaCoinConsumer(Mineracao mineracao) {
         return new Thread(() -> {
@@ -99,8 +91,8 @@ public class MineracaoService {
                     // consumerAquire();
                     try {
                         PilaCoin pilaCoin = FILA_COIN.poll();
-                        String pilaJson = this.generateJSON(pilaCoin);
-                        BigInteger numHash = new BigInteger(this.generateHash(pilaJson)).abs();
+                        String pilaJson = UtilGenerators.generateJSON(pilaCoin);
+                        BigInteger numHash = UtilGenerators.generateHash(pilaJson);
 
                         // Tentativas
                         if (numHash.compareTo(Mineracao.DIFICULDADE) < 0) {
@@ -118,9 +110,12 @@ public class MineracaoService {
                             mineracao.setTempoInicialMineracao(System.currentTimeMillis());
                             mineracao.setNumTentativas(0);
                             mineracao.setTempoInicialTentativa(System.currentTimeMillis());
+
+                            //Envia pila coin
+                            this.sendPilaCoin(pilaCoin);
                         } else {
                             //N MINEROU
-                            if (System.currentTimeMillis() - mineracao.getTempoInicialTentativa() > mineracao.getPRINT_TIME_MS()) {
+                            if (System.currentTimeMillis() - mineracao.getTempoInicialTentativa() > Mineracao.PRINT_TIME_MS) {
                                 System.out.println("---------------Tentando----------------");
                                 System.out.println("Número de Mineracoes: " + mineracao.getNumMineracoes());
                                 System.out.println("Número de tentativas: " + mineracao.getNumTentativas());
@@ -128,6 +123,8 @@ public class MineracaoService {
                                 System.out.println("Número da Dificuldade: " + Mineracao.DIFICULDADE);
                                 System.out.println("Tamanho da lista: " + FILA_COIN.size());
                                 System.out.println("Veses Fila vazia: "+ vezesPilhaVazia);
+                                System.out.println("Nonce bit length: " + pilaCoin.getNonce().bitLength());
+                                System.out.println("Nonce bit count: " + pilaCoin.getNonce().bitCount());
                                 System.out.println("---------------------------------------");
                                 mineracao.setTempoInicialTentativa(0);
                                 mineracao.setTempoInicialTentativa(System.currentTimeMillis());
@@ -147,41 +144,29 @@ public class MineracaoService {
             }
 
         });
-
     }
 
-    private String generateJSON(PilaCoin pilaCoin) {
-        String json = "";
+    private void sendPilaCoin(PilaCoin pilaCoin) {
         try {
-            json = new ObjectMapper().writeValueAsString(pilaCoin);
-        } catch (JsonProcessingException e) {
-            LOG.warning("Falha ao gerar JSON do pila coin!");
+            boolean ok = this.pilaCoinClientService.submitPilaCoin(pilaCoin);
+            if (!ok) {
+                System.out.println("Falha ao sumeter pila coin");
+            } else {
+                this.verificaPilaCoin(pilaCoin);
+            }
+        }catch (RuntimeException e) {
             e.printStackTrace();
         }
-
-        if (json.equals("")) {
-            throw new RuntimeException("JSON ficou como uma String vazia!");
-        }
-        return json;
     }
 
-    private byte[] generateHash(String pilaJson) {
-        byte[] hash = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            hash = md.digest(pilaJson.getBytes("UTF-8"));
-        }catch (NoSuchAlgorithmException e) {
-            LOG.warning("Algoritmo para gerar HASH incorreto!");
-            e.printStackTrace();
-        }catch (UnsupportedEncodingException e) {
-            LOG.warning("Falha ao gerar HASH do JSON");
-            e.printStackTrace();
+    private void verificaPilaCoin(PilaCoin pilaCoin) {
+        boolean ok = this.pilaCoinClientService.verifyPilaCoinExists(pilaCoin);
+        if (ok) {
+            System.out.println("Pila Coin está cadastrado!");
+            pilaCoinsRegistrados.add(pilaCoin);
+        } else {
+            System.out.println("Falhou... Pila Coin não está cadastrado!");
         }
-
-        if (hash == null) {
-            throw new RuntimeException("Falha ao gerar HASH (a hash gerada é null)");
-        }
-        return hash;
     }
 
 //    private void producerAquire() {

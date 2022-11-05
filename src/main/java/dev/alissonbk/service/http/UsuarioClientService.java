@@ -18,7 +18,6 @@ import java.util.Map;
 @Service
 public class UsuarioClientService {
 
-    // TODO -> refatorar (controller está com regras de negocio)
     @SneakyThrows
     public Boolean createUser(byte[] chavePublicaBytes) {
 

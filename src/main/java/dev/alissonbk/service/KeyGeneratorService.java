@@ -13,16 +13,16 @@ import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 @Service
-public class KeyPairGeneratorService {
+public class KeyGeneratorService {
 
     public static final String PUBLIC_KEY_RELATIVE_PATH = "src/main/resources/keyfiles/publicKey.txt";
     public static final String PRIVATE_KEY_RELATIVE_PATH = "src/main/resources/keyfiles/privateKey.txt";
-    public static final Logger LOG = Logger.getLogger(KeyPairGeneratorService.class.getName());
+    public static final String MASTER_PUBLIC_KEY_RELATIVE_PATH = "src/main/resources/keyfiles/master-pub.key";
+    public static final Logger LOG = Logger.getLogger(KeyGeneratorService.class.getName());
 
     public void generateKeys() {
 
@@ -65,11 +65,11 @@ public class KeyPairGeneratorService {
 
     @SneakyThrows
     public Mineracao getKeysFromFile() {
-        byte[] publicKeyBytes = Files.readAllBytes(Path.of(KeyPairGeneratorService.PUBLIC_KEY_RELATIVE_PATH));
+        byte[] publicKeyBytes = Files.readAllBytes(Path.of(KeyGeneratorService.PUBLIC_KEY_RELATIVE_PATH));
         System.out.println(("Chave publica Base64: " + Base64.getEncoder().encodeToString(publicKeyBytes)));
 
 
-        byte[] privateKeyBytes = Files.readAllBytes(Path.of(KeyPairGeneratorService.PRIVATE_KEY_RELATIVE_PATH));
+        byte[] privateKeyBytes = Files.readAllBytes(Path.of(KeyGeneratorService.PRIVATE_KEY_RELATIVE_PATH));
         System.out.println(("Chave privada Base64: " + Base64.getEncoder().encodeToString(privateKeyBytes)));
 
         PublicKey publicKey = KeyFactory.getInstance("RSA")
@@ -84,5 +84,11 @@ public class KeyPairGeneratorService {
 
 
         return new Mineracao(publicKeyBytes, privateKeyBytes);
+    }
+
+    @SneakyThrows
+    public String getMasterPublicKey() {
+        byte[] masterPubBytes = Files.readAllBytes(Path.of(KeyGeneratorService.MASTER_PUBLIC_KEY_RELATIVE_PATH));
+        return Base64.getEncoder().encodeToString(masterPubBytes);
     }
 }

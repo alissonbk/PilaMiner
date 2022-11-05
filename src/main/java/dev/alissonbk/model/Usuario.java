@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {
-    public static final String NOME = "usuario teste";
+    public static final String NOME = "Alisson Billig Kroth";
     //public int id = null;
     private String nome;
     private String chavePublica;
