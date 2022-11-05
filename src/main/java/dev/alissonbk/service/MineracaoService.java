@@ -2,12 +2,11 @@ package dev.alissonbk.service;
 
 import dev.alissonbk.model.Mineracao;
 import dev.alissonbk.model.PilaCoin;
-import dev.alissonbk.service.http.PilaCoinClientService;
+import dev.alissonbk.http.PilaCoinClientHttp;
 import dev.alissonbk.util.UtilGenerators;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -26,7 +25,7 @@ public class MineracaoService {
     private int vezesPilhaVazia = 0;
     private final int numThreads = Runtime.getRuntime().availableProcessors();
     private Mineracao mineracao;
-    private final PilaCoinClientService pilaCoinClientService = new PilaCoinClientService();
+    private final PilaCoinClientHttp pilaCoinClientHttp = new PilaCoinClientHttp();
     private List<PilaCoin> pilaCoinsRegistrados = new ArrayList<>();
 
     public MineracaoService(Mineracao mineracao) {
@@ -98,12 +97,15 @@ public class MineracaoService {
                         if (numHash.compareTo(Mineracao.DIFICULDADE) < 0) {
                             mineracao.setNumMineracoes(mineracao.getNumMineracoes() + 1);
                             System.out.println("#####################MINEROU######################\n");
-                            System.out.println("Numero de Mineracoes: " + mineracao.getNumMineracoes());
+                            System.out.println("Número de Mineracoes (Interno): " + mineracao.getNumMineracoes());
+                            System.out.println("Número de Mineracoes (Registradas): "
+                                    + this.pilaCoinsRegistrados.size());
                             System.out.println("Numero de tentativas: " + mineracao.getNumTentativas());
                             System.out.println("Tempo demorado: " +
                                     (System.currentTimeMillis() - mineracao.getTempoInicialMineracao()) + "ms");
                             System.out.println("Numero da Hash gerada: " + numHash);
                             System.out.println("Número da Dificuldade: " + Mineracao.DIFICULDADE);
+                            System.out.println("Nonce: " + pilaCoin.getNonce());
                             System.out.println("###################################################\n");
 
                             // Reseta tentativas e tempodemorado
@@ -112,12 +114,14 @@ public class MineracaoService {
                             mineracao.setTempoInicialTentativa(System.currentTimeMillis());
 
                             //Envia pila coin
-                            this.sendPilaCoin(pilaCoin);
+                            this.sendPilaCoin(pilaJson, pilaCoin);
                         } else {
                             //N MINEROU
                             if (System.currentTimeMillis() - mineracao.getTempoInicialTentativa() > Mineracao.PRINT_TIME_MS) {
-                                System.out.println("---------------Tentando----------------");
-                                System.out.println("Número de Mineracoes: " + mineracao.getNumMineracoes());
+                                System.out.println("---------------Tentando---------------------------");
+                                System.out.println("Número de Mineracoes (Interno): " + mineracao.getNumMineracoes());
+                                System.out.println("Número de Mineracoes (Registradas): "
+                                        + this.pilaCoinsRegistrados.size());
                                 System.out.println("Número de tentativas: " + mineracao.getNumTentativas());
                                 System.out.println("Numero da Hash gerada: " + numHash);
                                 System.out.println("Número da Dificuldade: " + Mineracao.DIFICULDADE);
@@ -125,7 +129,7 @@ public class MineracaoService {
                                 System.out.println("Veses Fila vazia: "+ vezesPilhaVazia);
                                 System.out.println("Nonce bit length: " + pilaCoin.getNonce().bitLength());
                                 System.out.println("Nonce bit count: " + pilaCoin.getNonce().bitCount());
-                                System.out.println("---------------------------------------");
+                                System.out.println("--------------------------------------------------");
                                 mineracao.setTempoInicialTentativa(0);
                                 mineracao.setTempoInicialTentativa(System.currentTimeMillis());
                             }
@@ -146,9 +150,9 @@ public class MineracaoService {
         });
     }
 
-    private void sendPilaCoin(PilaCoin pilaCoin) {
+    private void sendPilaCoin(String pilaJson, PilaCoin pilaCoin) {
         try {
-            boolean ok = this.pilaCoinClientService.submitPilaCoin(pilaCoin);
+            boolean ok = this.pilaCoinClientHttp.submitPilaCoin(pilaJson);
             if (!ok) {
                 System.out.println("Falha ao sumeter pila coin");
             } else {
@@ -160,7 +164,7 @@ public class MineracaoService {
     }
 
     private void verificaPilaCoin(PilaCoin pilaCoin) {
-        boolean ok = this.pilaCoinClientService.verifyPilaCoinExists(pilaCoin);
+        boolean ok = this.pilaCoinClientHttp.verifyPilaCoinExists(pilaCoin);
         if (ok) {
             System.out.println("Pila Coin está cadastrado!");
             pilaCoinsRegistrados.add(pilaCoin);

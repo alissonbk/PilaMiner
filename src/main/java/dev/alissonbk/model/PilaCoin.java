@@ -17,7 +17,7 @@ import java.util.Date;
 public class PilaCoin implements Serializable {
 
     private int id = 0;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone="America/Sao_Paulo")
+    //@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone="America/Sao_Paulo")
     private Date dataCriacao;
     private String chaveCriador;
     private String assinaturaMaster = new KeyGeneratorService().getMasterPublicKey();
@@ -42,13 +42,4 @@ public class PilaCoin implements Serializable {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "PilaCoin{" +
-                "id='" + id + '\'' +
-                ", dataCriacao=" + dataCriacao +
-                ", chaveCriador=" + chaveCriador +
-                ", nonce=" + nonce +
-                '}';
-    }
 }

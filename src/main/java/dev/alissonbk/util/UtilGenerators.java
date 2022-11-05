@@ -18,7 +18,7 @@ public class UtilGenerators {
         try {
             ObjectMapper om = new ObjectMapper();
             om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+            //om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
             json = om.writeValueAsString(pilaCoin);
         } catch (JsonProcessingException e) {
             System.out.println("Falha ao gerar JSON do pila coin!");

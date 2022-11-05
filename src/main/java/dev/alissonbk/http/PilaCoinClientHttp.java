@@ -1,11 +1,8 @@
-package dev.alissonbk.service.http;
+package dev.alissonbk.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.alissonbk.model.PilaCoin;
-import dev.alissonbk.model.Usuario;
 import dev.alissonbk.util.ServerEndpoints;
-import dev.alissonbk.util.UtilGenerators;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,45 +13,36 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URL;
-import java.util.Base64;
 
 @Service
-public class PilaCoinClientService {
+public class PilaCoinClientHttp {
 
     @SneakyThrows
-    public boolean submitPilaCoin(PilaCoin pilaCoin) {
+    public boolean submitPilaCoin(String pilaCoinJson) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<PilaCoin> response = null;
         try {
-            String json = UtilGenerators.generateJSON(pilaCoin);
-            System.out.println(json);
+            //System.out.println(pilaCoinJson);
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(
                     ServerEndpoints.PILA_COIN_VALIDATOR + "/").toURI())
-                    .contentType(MediaType.APPLICATION_JSON).body(json);
+                    .contentType(MediaType.APPLICATION_JSON).body(pilaCoinJson);
             response = restTemplate.exchange(requestEntity, PilaCoin.class);
-            System.out.println("submitPilaCoin StatusCode: " + response.getStatusCode());
-            System.out.println("submitPilaCoin Response: " + response.getBody());
+            //System.out.println("submitPilaCoin StatusCode: " + response.getStatusCode());
+            //System.out.println("submitPilaCoin Response: " + response.getBody());
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return true;
-        }
-        return false;
+        return response.getStatusCode().equals(HttpStatus.OK);
     }
 
     @SneakyThrows
     public boolean verifyPilaCoinExists(PilaCoin pilaCoin) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<PilaCoin> pilaCoinResponse = null;
+        ResponseEntity<String> pilaCoinResponse = null;
 
         try {
-            RequestEntity<String> requestEntity =
-                    RequestEntity.post(
-                            new URL(ServerEndpoints.PILA_COIN_EXISTS + "/?nonce=" + pilaCoin.getNonce()).toURI())
-                            .contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(""));
-
-            pilaCoinResponse = restTemplate.exchange(requestEntity, PilaCoin.class);
+            final String URL = ServerEndpoints.PILA_COIN_EXISTS + "/?nonce=" + pilaCoin.getNonce();
+            pilaCoinResponse = restTemplate.getForEntity(URL, String.class);
         } catch (HttpClientErrorException e) {
             return false;
         } catch (RuntimeException e) {
@@ -64,11 +52,8 @@ public class PilaCoinClientService {
             System.out.println("Nonce não encontrado !");
             return false;
         }
-        if (pilaCoinResponse.getBody().getNonce() == pilaCoin.getNonce()) {
-            System.out.println("Nonce encontrado!!");
-            return true;
-        }
-        return false;
+
+        return pilaCoinResponse.getStatusCode().equals(HttpStatus.OK);
     }
 
 }

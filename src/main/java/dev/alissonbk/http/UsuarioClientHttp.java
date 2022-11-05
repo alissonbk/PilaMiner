@@ -1,4 +1,4 @@
-package dev.alissonbk.service.http;
+package dev.alissonbk.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.alissonbk.model.Usuario;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 @Service
-public class UsuarioClientService {
+public class UsuarioClientHttp {
 
     @SneakyThrows
     public Boolean createUser(byte[] chavePublicaBytes) {

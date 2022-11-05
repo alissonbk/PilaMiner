@@ -5,12 +5,12 @@ import dev.alissonbk.service.KeyGeneratorService;
 import dev.alissonbk.service.MineracaoService;
 import dev.alissonbk.service.WebSocketService;
 import dev.alissonbk.handler.WebSocketSessionHandler;
-import dev.alissonbk.service.http.UsuarioClientService;
+import dev.alissonbk.http.UsuarioClientHttp;
 
 
 public class Main {
     private static final KeyGeneratorService keyGeneratorService = new KeyGeneratorService();
-    private static final UsuarioClientService usuarioController = new UsuarioClientService();
+    private static final UsuarioClientHttp usuarioController = new UsuarioClientHttp();
     private static final WebSocketSessionHandler sessionHandler = new WebSocketSessionHandler();
     private static final WebSocketService webSocketService = new WebSocketService();
 
