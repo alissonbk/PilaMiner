@@ -18,8 +18,6 @@ import java.util.logging.Logger;
 @Service
 public class MineracaoService {
     public static final Logger LOG = Logger.getLogger(MineracaoService.class.getName());
-    // private final Semaphore SEMAFORO_PRODUCER = new Semaphore((this.numThreads*20)/100);
-    // private final Semaphore SEMAFORO_CONSUMER = new Semaphore((this.numThreads*80)/100);
     private static final int FILA_SIZE = 20;
     private final BlockingQueue<PilaCoin> FILA_COIN = new LinkedBlockingQueue<>(FILA_SIZE);
     private int vezesPilhaVazia = 0;
@@ -59,19 +57,16 @@ public class MineracaoService {
                     Thread.yield();
                 } else {
                     if (FILA_COIN.size() < FILA_SIZE) {
-                        // this.producerAquire();
                         final SecureRandom RANDOM = new SecureRandom();
                         PilaCoin pilaCoin = new PilaCoin();
                         pilaCoin.setDataCriacao(new java.util.Date());
                         pilaCoin.setChaveCriador(Base64.getEncoder().encodeToString(mineracao.getPublicKey()));
-                        pilaCoin.setNonce(new BigInteger(128, RANDOM).abs());
+                        pilaCoin.setNonceNumber(new BigInteger(128, RANDOM).abs());
                         try {
                             FILA_COIN.add(pilaCoin);
                         } catch (RuntimeException e) {
                             LOG.warning("Falha ao adicionar pila coin a fila!");
                             throw new RuntimeException(e);
-                        } finally {
-                            //  SEMAFORO_PRODUCER.release();
                         }
                     }
                 }
@@ -87,9 +82,9 @@ public class MineracaoService {
             while (true) {
                 if (!FILA_COIN.isEmpty()) {
                     mineracao.setNumTentativas(mineracao.getNumTentativas()+1);
-                    // consumerAquire();
                     try {
                         PilaCoin pilaCoin = FILA_COIN.poll();
+                        pilaCoin.setNonce(pilaCoin.getNonceNumber().toString());
                         String pilaJson = UtilGenerators.generateJSON(pilaCoin);
                         BigInteger numHash = UtilGenerators.generateHash(pilaJson);
 
@@ -127,8 +122,8 @@ public class MineracaoService {
                                 System.out.println("Número da Dificuldade: " + Mineracao.DIFICULDADE);
                                 System.out.println("Tamanho da lista: " + FILA_COIN.size());
                                 System.out.println("Veses Fila vazia: "+ vezesPilhaVazia);
-                                System.out.println("Nonce bit length: " + pilaCoin.getNonce().bitLength());
-                                System.out.println("Nonce bit count: " + pilaCoin.getNonce().bitCount());
+                                //System.out.println("Nonce bit length: " + pilaCoin.getNonceNumber().bitLength());
+                                System.out.println("Nonce bit count: " + pilaCoin.getNonceNumber().bitCount());
                                 System.out.println("--------------------------------------------------");
                                 mineracao.setTempoInicialTentativa(0);
                                 mineracao.setTempoInicialTentativa(System.currentTimeMillis());
@@ -138,8 +133,6 @@ public class MineracaoService {
                         LOG.warning("Falha ao pegar pila coin da lista");
                         Thread.currentThread().interrupt();
                         throw new RuntimeException(e);
-                    }finally {
-                        // SEMAFORO_CONSUMER.release();
                     }
                 } else {
                     vezesPilhaVazia++;
@@ -172,22 +165,5 @@ public class MineracaoService {
             System.out.println("Falhou... Pila Coin não está cadastrado!");
         }
     }
-
-//    private void producerAquire() {
-//        try {
-//            SEMAFORO_PRODUCER.acquire();
-//        }catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    private void consumerAquire() {
-//        try {
-//            SEMAFORO_CONSUMER.acquire();
-//        }catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 
 }

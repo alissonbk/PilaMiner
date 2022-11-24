@@ -1,6 +1,7 @@
 package dev.alissonbk.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import dev.alissonbk.service.KeyGeneratorService;
 import lombok.*;
@@ -16,13 +17,15 @@ import java.util.Date;
 @JsonPropertyOrder(alphabetic = true)
 public class PilaCoin implements Serializable {
 
-    private int id = 0;
+    //private int id = 0;
     //@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone="America/Sao_Paulo")
     private Date dataCriacao;
     private String chaveCriador;
-    private String assinaturaMaster = new KeyGeneratorService().getMasterPublicKey();
-    private BigInteger nonce; //utilizar precisão de 128 bits
-    private String status = "AG_VALIDACAO";
+    //private String assinaturaMaster = new KeyGeneratorService().getMasterPublicKey();
+    private String nonce;
+    @JsonIgnore
+    private BigInteger nonceNumber; //utilizar precisão de 128 bits
+    //private String status = "AG_VALIDACAO";
 
     @Override
     public boolean equals(Object o) {
