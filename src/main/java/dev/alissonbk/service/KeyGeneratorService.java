@@ -22,12 +22,11 @@ public class KeyGeneratorService {
     public static final String PUBLIC_KEY_RELATIVE_PATH = "src/main/resources/keyfiles/publicKey.txt";
     public static final String PRIVATE_KEY_RELATIVE_PATH = "src/main/resources/keyfiles/privateKey.txt";
     public static final String MASTER_PUBLIC_KEY_RELATIVE_PATH = "src/main/resources/keyfiles/master-pub.key";
-    public static final Logger LOG = Logger.getLogger(KeyGeneratorService.class.getName());
 
     public void generateKeys() {
 
         if (new File(PUBLIC_KEY_RELATIVE_PATH).exists() && new File(PRIVATE_KEY_RELATIVE_PATH).exists()) {
-            LOG.info("Os arquivos com a chave publica e privada já estão criados em ex: " + PUBLIC_KEY_RELATIVE_PATH);
+            System.out.println("Os arquivos com a chave publica e privada já estão criados em ex: " + PUBLIC_KEY_RELATIVE_PATH);
         } else {
             KeyPair keyPair = null;
             try {
@@ -35,11 +34,11 @@ public class KeyGeneratorService {
                 keyPairGenerator.initialize(2048);
                 keyPair = keyPairGenerator.generateKeyPair();
             } catch (NoSuchAlgorithmException e) {
-                LOG.warning("Falha ao gerar par de chaves!!!");
+                System.out.println("Falha ao gerar par de chaves!!!");
                 e.printStackTrace();
             } finally {
                 if (keyPair == null) {
-                    LOG.warning("KeyPair é nulo!!");
+                    System.out.println("KeyPair é nulo!!");
                     throw new RuntimeException("KeyPair é nulo!!");
                 } else {
                     try {
@@ -52,7 +51,7 @@ public class KeyGeneratorService {
                         System.out.println(("Os arquivos com a chave publica e privada foram gerados e salvos com sucesso! " +
                                 "\n Public: " + PUBLIC_KEY_RELATIVE_PATH + "\n Private: " + PRIVATE_KEY_RELATIVE_PATH));
                     } catch (IOException e) {
-                        LOG.warning("Falha ao salvar arquivos com as chaves");
+                        System.out.println("Falha ao salvar arquivos com as chaves");
                         e.printStackTrace();
                     }
                 }

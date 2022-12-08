@@ -24,6 +24,10 @@ public class WebSocketSessionHandler implements StompSessionHandler {
         stompSession.subscribe("/topic/dificuldade", this);
         /*valida mineracao de outros usuarios*/
         stompSession.subscribe("/topic/validaMineracao", this);
+        /*descobre novo bloco*/
+        stompSession.subscribe("/topic/descobrirNovoBloco", this);
+        /*recebe bloco para validar*/
+        stompSession.subscribe("/ttopic/validaBloco", this);
     }
 
     @Override
@@ -46,6 +50,12 @@ public class WebSocketSessionHandler implements StompSessionHandler {
         if (Objects.equals(stompHeaders.getDestination(), "/topic/validaMineracao")) {
             return ValidaCoinRecieveDTO.class;
         }
+        if (Objects.equals(stompHeaders.getDestination(), "/topic/descobrirNovoBloco")) {
+            return Object.class;
+        }
+        if (Objects.equals(stompHeaders.getDestination(), "/topic/validaBloco")) {
+            return Object.class;
+        }
 
         return null;
     }
@@ -57,7 +67,8 @@ public class WebSocketSessionHandler implements StompSessionHandler {
         switch (stompHeaders.getDestination()) {
             case ("/topic/dificuldade") -> handleDificuldade(o);
             case ("/topic/validaMineracao") -> handleValidacaoPila(o);
-
+            case ("/topic/descobrirNovoBloco") -> handleNovoBloco(o);
+            case ("/topic/validaBloco") -> handleValidaBloco(o);
         }
 
     }
@@ -83,13 +94,21 @@ public class WebSocketSessionHandler implements StompSessionHandler {
 
     private void handleValidacaoPila(Object o) {
         ValidaCoinRecieveDTO pila = (ValidaCoinRecieveDTO) o;
-        System.out.println("ValidaPilaCoinRecieved: " + pila);
+        //System.out.println("ValidaPilaCoinRecieved: " + pila);
         try {
-            System.out.println(ValidaCoinService.validaCoin(pila));
+            //System.out.println(ValidaCoinService.validaCoin(pila));
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void handleNovoBloco(Object o) {
+        System.out.println("Novo bloco: " + o.toString());
+    }
+
+    private void handleValidaBloco(Object o) {
+        System.out.println("Valida bloco: " + o.toString());
     }
 
 
