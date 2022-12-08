@@ -13,15 +13,14 @@ import java.text.SimpleDateFormat;
 
 public class UtilGenerators {
 
-    public static String generateJSON(PilaCoin pilaCoin) {
+    public static String generateJSON(Object o) {
         String json = "";
         try {
             ObjectMapper om = new ObjectMapper();
             om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            //om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-            json = om.writeValueAsString(pilaCoin);
+            json = om.writeValueAsString(o);
         } catch (JsonProcessingException e) {
-            System.out.println("Falha ao gerar JSON do pila coin!");
+            System.out.println("Falha ao gerar JSON do objeto: " + Object.class);
             e.printStackTrace();
         }
 

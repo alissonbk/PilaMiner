@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         keyGeneratorService.generateKeys(); // caso não exista gera chaves e salva no arquivo
-        Mineracao mineracao = keyGeneratorService.getKeysFromFile(); // pega chaves do arquivo p obj mineracao
+        Mineracao mineracao = keyGeneratorService.generateMineracaoWithKeys(); // pega chaves do arquivo p obj mineracao
         System.out.println("\n");
         MineracaoService mineracaoService = new MineracaoService(mineracao); // instancia mineracao service
 

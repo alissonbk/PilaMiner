@@ -1,10 +1,9 @@
 package dev.alissonbk.handler;
 
 import dev.alissonbk.model.Mineracao;
-import dev.alissonbk.model.PilaCoin;
-import dev.alissonbk.model.PilaValidaRet;
+import dev.alissonbk.dto.recieve.ValidaCoinRecieveDTO;
+import dev.alissonbk.service.ValidaCoinService;
 import lombok.*;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -12,8 +11,6 @@ import org.springframework.messaging.simp.stomp.StompSessionHandler;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
-import java.nio.Buffer;
-import java.util.Base64;
 import java.util.Objects;
 
 
@@ -47,7 +44,7 @@ public class WebSocketSessionHandler implements StompSessionHandler {
             return DificuldadeRet.class;
         }
         if (Objects.equals(stompHeaders.getDestination(), "/topic/validaMineracao")) {
-            return PilaValidaRet.class;
+            return ValidaCoinRecieveDTO.class;
         }
 
         return null;
@@ -58,16 +55,14 @@ public class WebSocketSessionHandler implements StompSessionHandler {
         assert o != null;
         assert stompHeaders.getDestination() != null;
         switch (stompHeaders.getDestination()) {
-            case("/topic/dificuldade"):
-                handleDificuldade(o);
-            break;
-            case("/topic/validaMineracao"):
-                System.out.println("Stomp Headers: " + stompHeaders.toString());
-                handleValidacaoPila(o);
-            break;
+            case ("/topic/dificuldade") -> handleDificuldade(o);
+            case ("/topic/validaMineracao") -> handleValidacaoPila(o);
+
         }
 
     }
+
+
 
     @Builder
     @Data
@@ -75,14 +70,6 @@ public class WebSocketSessionHandler implements StompSessionHandler {
     @NoArgsConstructor
     public static class DificuldadeRet {
         private String dificuldade;
-    }
-
-    @Builder
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ValidacaoRet {
-        private String validacao;
     }
 
     private void handleDificuldade(Object o) {
@@ -95,8 +82,14 @@ public class WebSocketSessionHandler implements StompSessionHandler {
     }
 
     private void handleValidacaoPila(Object o) {
-        PilaValidaRet pilaValidaRet = (PilaValidaRet) o;
-        System.out.println("PilaValidaRet: " + pilaValidaRet);
+        ValidaCoinRecieveDTO pila = (ValidaCoinRecieveDTO) o;
+        System.out.println("ValidaPilaCoinRecieved: " + pila);
+        try {
+            System.out.println(ValidaCoinService.validaCoin(pila));
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

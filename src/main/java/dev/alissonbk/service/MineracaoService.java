@@ -3,6 +3,7 @@ package dev.alissonbk.service;
 import dev.alissonbk.model.Mineracao;
 import dev.alissonbk.model.PilaCoin;
 import dev.alissonbk.http.PilaCoinClientHttp;
+import dev.alissonbk.util.Util;
 import dev.alissonbk.util.UtilGenerators;
 import org.springframework.stereotype.Service;
 
@@ -89,7 +90,7 @@ public class MineracaoService {
                         BigInteger numHash = UtilGenerators.generateHash(pilaJson);
 
                         // Tentativas
-                        if (numHash.compareTo(Mineracao.DIFICULDADE) < 0) {
+                        if (Util.validateMineracao(numHash)) {
                             mineracao.setNumMineracoes(mineracao.getNumMineracoes() + 1);
                             System.out.println("#####################MINEROU######################\n");
                             System.out.println("Número de Mineracoes (Interno): " + mineracao.getNumMineracoes());
