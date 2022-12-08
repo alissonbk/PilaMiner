@@ -22,7 +22,7 @@ public class PilaCoinClientHttp {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<PilaCoin> response = null;
         try {
-            System.out.println("Pila coin json: " + pilaCoinJson);
+            //System.out.println(pilaCoinJson);
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(
                     ServerEndpoints.PILA_COIN_VALIDATOR + "/").toURI())
                     .contentType(MediaType.APPLICATION_JSON).body(pilaCoinJson);
@@ -31,9 +31,6 @@ public class PilaCoinClientHttp {
             //System.out.println("submitPilaCoin Response: " + response.getBody());
         } catch (RuntimeException e) {
             e.printStackTrace();
-        }
-        if (response == null) {
-            return false;
         }
         return response.getStatusCode().equals(HttpStatus.OK);
     }

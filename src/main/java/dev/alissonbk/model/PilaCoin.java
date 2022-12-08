@@ -17,15 +17,17 @@ import java.util.Date;
 @JsonPropertyOrder(alphabetic = true)
 public class PilaCoin implements Serializable {
 
-    //private int id = 0;
+    private int id = 0;
     //@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone="America/Sao_Paulo")
     private Date dataCriacao;
     private String chaveCriador;
-    //private String assinaturaMaster = new KeyGeneratorService().getMasterPublicKey();
-    private String nonce;
+    @JsonIgnore
+    private String assinaturaMaster = new KeyGeneratorService().getMasterPublicKey();
     @JsonIgnore
     private BigInteger nonceNumber; //utilizar precisão de 128 bits
-    //private String status = "AG_VALIDACAO";
+    private String nonce;
+    @JsonIgnore
+    private String status;
 
     @Override
     public boolean equals(Object o) {
@@ -35,13 +37,13 @@ public class PilaCoin implements Serializable {
         PilaCoin pilaCoin = (PilaCoin) o;
 
         if (!dataCriacao.equals(pilaCoin.dataCriacao)) return false;
-        return nonce.equals(pilaCoin.nonce);
+        return nonceNumber.equals(pilaCoin.nonceNumber);
     }
 
     @Override
     public int hashCode() {
         int result = dataCriacao.hashCode();
-        result = 31 * result + nonce.hashCode();
+        result = 31 * result + nonceNumber.hashCode();
         return result;
     }
 
