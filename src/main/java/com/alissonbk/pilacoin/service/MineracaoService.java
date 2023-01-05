@@ -19,6 +19,7 @@ import java.util.logging.Logger;
  */
 @Service
 public class MineracaoService {
+    private PilaMineradoService pilaMineradoService;
     public static final Logger LOG = Logger.getLogger(MineracaoService.class.getName());
     private static final int FILA_SIZE = 20;
     private final BlockingQueue<PilaCoin> FILA_COIN = new LinkedBlockingQueue<>(FILA_SIZE);
@@ -29,7 +30,8 @@ public class MineracaoService {
     private List<PilaCoin> pilaCoinsRegistrados = new ArrayList<>();
 
 
-    public MineracaoService(Mineracao mineracao){
+    public MineracaoService(PilaMineradoService pilaMineradoService, Mineracao mineracao){
+        this.pilaMineradoService = pilaMineradoService;
         this.mineracao = mineracao;
     }
     public MineracaoService() {
@@ -149,21 +151,20 @@ public class MineracaoService {
 
     private void sendPilaCoin(String pilaJson, PilaCoin pilaCoin) {
         try {
-            boolean ok = this.pilaCoinClientHttp.submitPilaCoin(pilaJson);
-            if (!ok) {
+            if (!this.pilaCoinClientHttp.submitPilaCoin(pilaJson)) {
                 System.out.println("Falha ao sumeter pila coin");
             } else {
-                this.verificaPilaCoin(pilaCoin);
+                this.verificaPilaCoin(pilaCoin, pilaJson);
             }
         }catch (RuntimeException e) {
             e.printStackTrace();
         }
     }
 
-    private void verificaPilaCoin(PilaCoin pilaCoin) {
-        boolean ok = this.pilaCoinClientHttp.verifyPilaCoinExists(pilaCoin);
-        if (ok) {
+    private void verificaPilaCoin(PilaCoin pilaCoin, String pilaJson) {
+        if (this.pilaCoinClientHttp.verifyPilaCoinExists(pilaCoin)) {
             System.out.println("Pila Coin está cadastrado!");
+            pilaMineradoService.savePilaMinerado(pilaCoin);
             pilaCoinsRegistrados.add(pilaCoin);
         } else {
             System.out.println("Falhou... Pila Coin não está cadastrado!");

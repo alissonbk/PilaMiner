@@ -2,8 +2,9 @@ package com.alissonbk.pilacoin.service;
 
 import com.alissonbk.pilacoin.model.Usuario;
 import com.alissonbk.pilacoin.repository.UsuarioRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 @Service
 public class UsuarioService {
@@ -15,6 +16,6 @@ public class UsuarioService {
 
     @Transactional
     public boolean saveUser(Usuario user) {
-        return this.usuarioRepository.save(user).equals(new Usuario());
+        return this.usuarioRepository.save(user).getChavePublica().equals(user.getChavePublica());
     }
 }

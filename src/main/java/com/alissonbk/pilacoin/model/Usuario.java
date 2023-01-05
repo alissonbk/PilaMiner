@@ -1,13 +1,12 @@
 package com.alissonbk.pilacoin.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Getter
@@ -21,7 +20,17 @@ public class Usuario {
     private Long id;
     public static final String NOME = "Alisson Billig Kroth";
     //public int id = null;
+
+    @NotNull
     private String nome;
+
+    @NotNull
+    @Column(columnDefinition = "text")
     private String chavePublica;
     private byte[] chavePublicaBytes;
+
+    @NotNull
+    @Column(columnDefinition = "text")
+    private String chavePrivada;
+    private byte[] chavePrivadaBytes;
 }

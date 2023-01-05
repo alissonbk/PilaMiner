@@ -1,6 +1,7 @@
 package com.alissonbk.pilacoin.http;
 
 import com.alissonbk.pilacoin.model.Usuario;
+import com.alissonbk.pilacoin.service.UsuarioService;
 import com.alissonbk.pilacoin.util.ServerEndpoints;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -18,22 +19,26 @@ import java.util.Map;
 @Service
 public class UsuarioClientHttp {
 
+    private final UsuarioService usuarioService;
+
+    public UsuarioClientHttp(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
     @SneakyThrows
-    public Usuario createUser(byte[] chavePublicaBytes) {
+    public Usuario createUser(Usuario newUser) {
 
         // verifica se o usuario ja está cadastrado
-        Boolean cadastrado = this.usuarioJaExiste(chavePublicaBytes);
-        Usuario newUser = new Usuario();
+        Boolean cadastrado = this.usuarioJaExiste(newUser.getChavePublicaBytes());
 
 
-        //se não contém cadastra
+        //se não contém o usuario, cadastra
         if (!cadastrado) {
             ResponseEntity<Usuario> response = null;
             RestTemplate restTemplate = new RestTemplate();
 
 
-            newUser.setNome(Usuario.NOME);
-            newUser.setChavePublica(Base64.getEncoder().encodeToString(chavePublicaBytes));
+
             Map<String, Object> mapUser = new HashMap<>();
             mapUser.put("id", 0);
             mapUser.put("nome", newUser.getNome());
@@ -57,7 +62,7 @@ public class UsuarioClientHttp {
             if (response != null && response.getBody() != null) {
                 System.out.println(response.getBody());
                 if(response.getStatusCode() == HttpStatus.ACCEPTED || response.getStatusCode() == HttpStatus.CREATED) {
-                    if (this.usuarioJaExiste(chavePublicaBytes)) {
+                    if (this.usuarioJaExiste(newUser.getChavePublicaBytes())) {
                         System.out.println("Usuario Cadastrado com sucesso!");
                         return newUser;
                     }
