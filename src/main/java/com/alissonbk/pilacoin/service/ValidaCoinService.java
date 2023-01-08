@@ -4,32 +4,41 @@ import com.alissonbk.pilacoin.dto.recieve.ValidaCoinRecieveDTO;
 import com.alissonbk.pilacoin.dto.send.ValidaCoinSendDTO;
 import com.alissonbk.pilacoin.http.PilaCoinClientHttp;
 import com.alissonbk.pilacoin.model.PilaCoin;
+import com.alissonbk.pilacoin.model.ValidacaoPilaBloco;
+import com.alissonbk.pilacoin.repository.ValidacaoPilaBlocoRepository;
 import com.alissonbk.pilacoin.util.Util;
 import com.alissonbk.pilacoin.util.UtilGenerators;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.Cipher;
 import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import java.time.Instant;
+import java.util.Map;
 
 @Service
 public class ValidaCoinService {
-    public static String validaCoin(ValidaCoinRecieveDTO validaCoinRecieveDTO) {
+    private final ValidacaoPilaBlocoRepository repository;
+
+    public ValidaCoinService(ValidacaoPilaBlocoRepository repository) {
+        this.repository = repository;
+    }
+
+    public String validaCoin(ValidaCoinRecieveDTO validaCoinRecieveDTO) {
         final PilaCoin pilaCoin = validaCoinRecieveDTO.toPilaCoin();
         final String pilaJson = UtilGenerators.generateJSON(pilaCoin);
         final BigInteger numHash = UtilGenerators.generateHash(pilaJson);
 
         if (Util.validateMineracao(numHash)) {
             final var pilaCoinClientHttp = new PilaCoinClientHttp();
-            boolean success = pilaCoinClientHttp.validateOtherUserCoin(
-                    createValidationJson(pilaCoin, pilaJson)
-            );
-            return success ? "Pila coin de outro usuario validado com sucesso"
-                    : "Falha ao validar pila coin de outro usuario!";
+            final String jsonToSend = createValidationJson(pilaCoin, pilaJson);
+            boolean success = pilaCoinClientHttp.validateOtherUserCoin(jsonToSend);
+            if (success) {
+                saveValidacaoPila(jsonToSend);
+                return "Pila coin de outro usuario validado com sucesso";
+            } else {
+                return "Falha ao validar pila coin de outro usuario!";
+            }
         } else {
             return "PilaCoin não é valido!";
         }
@@ -40,13 +49,13 @@ public class ValidaCoinService {
     private static String createValidationJson(PilaCoin pilaCoin, String pilaJson) {
         var validaCoinSendDTO = new ValidaCoinSendDTO();
         try {
-            validaCoinSendDTO.setTipo("PILA");
+            //validaCoinSendDTO.setTipo("PILA");
             validaCoinSendDTO.setNonce(pilaCoin.getNonce());
-            validaCoinSendDTO.setHashPilaBloco(UtilGenerators.generateHash(pilaJson).toString());
+            validaCoinSendDTO.setHashPilaBloco(UtilGenerators.generateHash(pilaJson).toByteArray());
             validaCoinSendDTO.setChavePublica(KeyGeneratorService.getPublicKeyString());
-            validaCoinSendDTO.setAssinatura(generateSignature(validaCoinSendDTO));
+            validaCoinSendDTO.setAssinatura(UtilGenerators.generateSignature(validaCoinSendDTO));
             final String json = UtilGenerators.generateJSON(validaCoinSendDTO);
-            System.out.println(json);
+            //System.out.println(json);
             return json;
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -54,16 +63,17 @@ public class ValidaCoinService {
         }
     }
 
-    @SneakyThrows
-    private static String generateSignature(ValidaCoinSendDTO validaCoinSendDTO) {
-        String json = UtilGenerators.generateJSON(validaCoinSendDTO);
-        Cipher cipher = Cipher.getInstance("RSA");
-        PublicKey publicKey =
-                KeyFactory.getInstance("RSA")
-                        .generatePublic(new X509EncodedKeySpec(KeyGeneratorService.getPublicKeyBytes()));
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        byte[] hash = UtilGenerators.generateHash(json).toByteArray();
-        return Base64.getEncoder().encodeToString(cipher.doFinal(hash));
+    @Transactional
+    public void saveValidacaoPila(String json) {
+        ValidacaoPilaBloco validacaoPilaBloco = new ValidacaoPilaBloco();
+        Map<String, Object> pilaCoindSendDTO = UtilGenerators.generateObjectFromJson(json);
+        validacaoPilaBloco.setPilaBlocoJson(pilaCoindSendDTO);
+        validacaoPilaBloco.setTipoPilaBloco(ValidacaoPilaBloco.TipoPilaBloco.PILA_COIN);
+        validacaoPilaBloco.setNonce(pilaCoindSendDTO.get("nonce").toString());
+        validacaoPilaBloco.setChaveCriador(pilaCoindSendDTO.get("chavePublica").toString());
+        validacaoPilaBloco.setDataAcao(Instant.now());
+        validacaoPilaBloco.setOutroUsuario(true);
+        this.repository.save(validacaoPilaBloco);
     }
 
 }

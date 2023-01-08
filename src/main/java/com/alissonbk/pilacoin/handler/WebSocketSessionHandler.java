@@ -2,7 +2,7 @@ package com.alissonbk.pilacoin.handler;
 
 import com.alissonbk.pilacoin.dto.recieve.ValidaCoinRecieveDTO;
 import com.alissonbk.pilacoin.model.Mineracao;
-import com.alissonbk.pilacoin.service.InitializationService;
+import com.alissonbk.pilacoin.service.ValidaCoinService;
 import lombok.*;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -18,7 +18,13 @@ import java.util.Objects;
 @Service
 public class WebSocketSessionHandler implements StompSessionHandler {
 
+    private final ValidaCoinService validaCoinService;
+
     public static BigInteger dificuldade;
+
+    public WebSocketSessionHandler(ValidaCoinService validaCoinService) {
+        this.validaCoinService = validaCoinService;
+    }
 
     @Override
     public void afterConnected(StompSession stompSession, StompHeaders stompHeaders) {
@@ -99,7 +105,7 @@ public class WebSocketSessionHandler implements StompSessionHandler {
         ValidaCoinRecieveDTO pila = (ValidaCoinRecieveDTO) o;
         //System.out.println("ValidaPilaCoinRecieved: " + pila);
         try {
-            //System.out.println(ValidaCoinService.validaCoin(pila));
+            System.out.println(validaCoinService.validaCoin(pila));
         } catch (RuntimeException e) {
             e.printStackTrace();
         }

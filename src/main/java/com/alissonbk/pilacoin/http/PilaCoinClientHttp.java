@@ -60,17 +60,19 @@ public class PilaCoinClientHttp {
     @SneakyThrows
     public boolean validateOtherUserCoin(String validaCoinSendJson) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<ValidaCoinSendDTO> response = null;
+        ResponseEntity<?> response = null;
         try {
             RequestEntity<String> requestEntity = RequestEntity.post(
                     new URL(ServerEndpoints.VALIDATE_COIN_OTHER_USER).toURI()
             ).contentType(MediaType.APPLICATION_JSON).body(validaCoinSendJson);
-            response = restTemplate.exchange(requestEntity, ValidaCoinSendDTO.class);
+            response = restTemplate.exchange(requestEntity, String.class);
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {
             e.printStackTrace();
         }
+        System.out.println("Response Body: " + response.getBody());
+        System.out.println("Response Status: " + response.getStatusCode());
         if (response == null) return false;
         return response.getStatusCode().equals(HttpStatus.OK);
     }

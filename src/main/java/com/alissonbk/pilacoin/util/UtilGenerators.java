@@ -1,13 +1,24 @@
 package com.alissonbk.pilacoin.util;
 
+import com.alissonbk.pilacoin.dto.send.ValidaCoinSendDTO;
+import com.alissonbk.pilacoin.service.KeyGeneratorService;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 
+import javax.crypto.Cipher;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import java.util.Map;
 
 public class UtilGenerators {
 
@@ -43,5 +54,23 @@ public class UtilGenerators {
         }
 
         return new BigInteger(hash).abs();
+    }
+
+    @SneakyThrows
+    public static String generateSignature(ValidaCoinSendDTO validaCoinSendDTO) {
+        String json = UtilGenerators.generateJSON(validaCoinSendDTO);
+        Cipher cipher = Cipher.getInstance("RSA");
+        PublicKey publicKey =
+                KeyFactory.getInstance("RSA")
+                        .generatePublic(new X509EncodedKeySpec(KeyGeneratorService.getPublicKeyBytes()));
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] hash = UtilGenerators.generateHash(json).toByteArray();
+        return Base64.getEncoder().encodeToString(cipher.doFinal(hash));
+    }
+
+    @SneakyThrows
+    public static Map<String, Object> generateObjectFromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json, Map.class);
     }
 }
