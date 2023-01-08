@@ -1,5 +1,7 @@
 package com.alissonbk.pilacoin.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,15 +24,34 @@ public class Usuario {
     //public int id = null;
 
     @NotNull
+    @Column(nullable = false)
     private String nome;
 
     @NotNull
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", nullable = false)
     private String chavePublica;
     private byte[] chavePublicaBytes;
 
     @NotNull
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", nullable = false)
     private String chavePrivada;
     private byte[] chavePrivadaBytes;
+
+    @NotNull
+    @Column(nullable = false)
+    private String email;
+
+    @NotNull
+    @JsonIgnore
+    @Column(nullable = false)
+    private String password;
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean isAtivo = true;
+
+    @Transient
+    @JsonProperty("access_token")
+    private String accessToken;
+
 }

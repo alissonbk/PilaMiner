@@ -49,6 +49,8 @@ public class InitializationService {
         usuario.setChavePrivada(Base64.getEncoder().encodeToString(privateKey));
         usuario.setChavePublicaBytes(pubKey);
         usuario.setChavePrivadaBytes(privateKey);
+        usuario.setEmail("alisson@email.com");
+        usuario.setPassword("$2a$12$xkgBKv3JxFP/wILLd6j.R.2lZjxa2D.LNfVkwoKJXefbFFcd7XAQK");
         if (usuarioService.saveUser(usuario)) {
             Usuario clientHttpUser = this.usuarioClientHttp.createUser(usuario);
             return clientHttpUser != null;
