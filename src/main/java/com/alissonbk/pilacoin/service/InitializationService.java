@@ -51,9 +51,12 @@ public class InitializationService {
         usuario.setChavePrivadaBytes(privateKey);
         usuario.setEmail("alisson@email.com");
         usuario.setPassword("$2a$12$xkgBKv3JxFP/wILLd6j.R.2lZjxa2D.LNfVkwoKJXefbFFcd7XAQK");
-        if (usuarioService.saveUser(usuario)) {
-            Usuario clientHttpUser = this.usuarioClientHttp.createUser(usuario);
-            return clientHttpUser != null;
+
+        if (!usuarioService.verifyUserExistsOnDB(usuario)) {
+            if (usuarioService.saveUser(usuario)) {
+                Usuario clientHttpUser = this.usuarioClientHttp.createUser(usuario);
+                return clientHttpUser != null;
+            }
         }
         return false;
     }

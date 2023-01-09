@@ -8,5 +8,5 @@ import javax.validation.constraints.Email;
 public class LoginDTO {
     @Email
     private String email;
-    private String passwd;
+    private String password;
 }

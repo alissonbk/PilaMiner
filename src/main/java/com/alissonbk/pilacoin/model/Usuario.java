@@ -28,17 +28,16 @@ public class Usuario {
     private String nome;
 
     @NotNull
-    @Column(columnDefinition = "text", nullable = false)
+    @Column(columnDefinition = "text", nullable = false, unique = true)
     private String chavePublica;
     private byte[] chavePublicaBytes;
 
-    @NotNull
-    @Column(columnDefinition = "text", nullable = false)
+    @Column(columnDefinition = "text", nullable = false, unique = true)
     private String chavePrivada;
     private byte[] chavePrivadaBytes;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @NotNull

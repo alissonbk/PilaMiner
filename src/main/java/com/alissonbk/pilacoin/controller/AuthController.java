@@ -21,7 +21,10 @@ public class AuthController {
 
     @PostMapping("/v1/login")
     Usuario login(@RequestBody LoginDTO loginDTO) {
-        return this.usuarioService.login(loginDTO);
+        Usuario u = this.usuarioService.login(loginDTO);
+        u.setChavePrivada(null);
+        u.setChavePrivadaBytes(null);
+        return u;
     }
 
     @ExceptionHandler(BadCredentialsException.class)

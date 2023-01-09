@@ -41,22 +41,25 @@ public class UsuarioService {
         return this.usuarioRepository
                 .findByEmailIgnoreCase(credentials.getEmail())
                 .map(u -> {
-                    if (bcrypt.matches(credentials.getPasswd(), u.getPassword())) {
+                    if (bcrypt.matches(credentials.getPassword(), u.getPassword())) {
                         final var authToken = new UsernamePasswordAuthenticationToken(
                                 u.getEmail(),
-                                credentials.getPasswd()
+                                credentials.getPassword()
                         );
                         final var auth = this.authenticationManager.authenticate(authToken);
                         SecurityContextHolder.clearContext(); //limpa o context da sessão
                         SecurityContextHolder.getContext().setAuthentication(auth);
 
                         u.setAccessToken(this.jwtTokenProvider.createToken(u));
-
                         return u;
                     }
                     throw new SecurityException("Falha ao autenticar usuario");
                 })
                 .orElseThrow(() -> new SecurityException("Falha ao autenticar usuario"));
+    }
+
+    public boolean verifyUserExistsOnDB(Usuario u) {
+        return usuarioRepository.findByEmailIgnoreCase(u.getEmail()).isPresent();
     }
 }
 
