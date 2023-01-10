@@ -16,9 +16,9 @@ public class InitializationService {
     private final UsuarioClientHttp usuarioClientHttp;
     private final UsuarioService usuarioService;
     private final WebSocketClientService webSocketClientService;
-    private final PilaMineradoService pilaMineradoService;
+    private final TransacaoService pilaMineradoService;
 
-    public InitializationService(KeyGeneratorService keyGeneratorService, UsuarioClientHttp usuarioClientHttp, UsuarioService usuarioService, WebSocketClientService webSocketClientService, PilaMineradoService pilaMineradoService) {
+    public InitializationService(KeyGeneratorService keyGeneratorService, UsuarioClientHttp usuarioClientHttp, UsuarioService usuarioService, WebSocketClientService webSocketClientService, TransacaoService pilaMineradoService) {
         this.keyGeneratorService = keyGeneratorService;
         this.usuarioClientHttp = usuarioClientHttp;
         this.usuarioService = usuarioService;
@@ -58,7 +58,7 @@ public class InitializationService {
                 Usuario clientHttpUser = this.usuarioClientHttp.createUser(usuario);
                 return clientHttpUser != null;
             }
-        }//else return true;
+        }else return true;
 
         return false;
     }

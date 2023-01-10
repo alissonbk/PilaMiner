@@ -4,6 +4,7 @@ package com.alissonbk.pilacoin.service;
 import com.alissonbk.pilacoin.http.PilaCoinClientHttp;
 import com.alissonbk.pilacoin.model.Mineracao;
 import com.alissonbk.pilacoin.model.PilaCoin;
+import com.alissonbk.pilacoin.model.Usuario;
 import com.alissonbk.pilacoin.util.Util;
 import com.alissonbk.pilacoin.util.UtilGenerators;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
  */
 @Service
 public class MineracaoService {
-    private PilaMineradoService pilaMineradoService;
+    private TransacaoService transacaoService;
     public static final Logger LOG = Logger.getLogger(MineracaoService.class.getName());
     private static final int FILA_SIZE = 20;
     private final BlockingQueue<PilaCoin> FILA_COIN = new LinkedBlockingQueue<>(FILA_SIZE);
@@ -31,8 +32,8 @@ public class MineracaoService {
     public static boolean MINERACAO_IS_RUNNING = true;
 
 
-    public MineracaoService(PilaMineradoService pilaMineradoService, Mineracao mineracao){
-        this.pilaMineradoService = pilaMineradoService;
+    public MineracaoService(TransacaoService transacaoService, Mineracao mineracao){
+        this.transacaoService = transacaoService;
         this.mineracao = mineracao;
     }
     public MineracaoService() {
@@ -165,10 +166,19 @@ public class MineracaoService {
     private void verificaPilaCoin(PilaCoin pilaCoin, String pilaJson) {
         if (this.pilaCoinClientHttp.verifyPilaCoinExists(pilaCoin)) {
             System.out.println("Pila Coin está cadastrado!");
-            pilaMineradoService.savePilaMinerado(pilaCoin);
+            transacaoService.savePilaMinerado(pilaCoin);
             pilaCoinsRegistrados.add(pilaCoin);
         } else {
             System.out.println("Falhou... Pila Coin não está cadastrado!");
+        }
+    }
+
+    public void startStopLoop(Usuario usuario, TransacaoService transacaoService) throws InterruptedException {
+        MineracaoService.MINERACAO_IS_RUNNING = !MineracaoService.MINERACAO_IS_RUNNING;
+        if (MineracaoService.MINERACAO_IS_RUNNING) {
+            this.transacaoService = transacaoService;
+            this.mineracao = new Mineracao(usuario.getChavePublicaBytes(), usuario.getChavePrivadaBytes());
+            miningLoop();
         }
     }
 

@@ -2,17 +2,17 @@ package com.alissonbk.pilacoin.service;
 
 import com.alissonbk.pilacoin.model.PilaCoin;
 import com.alissonbk.pilacoin.model.Transacao;
-import com.alissonbk.pilacoin.repository.PilaMineradoRepository;
+import com.alissonbk.pilacoin.repository.TransacaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
 @Service
-public class PilaMineradoService {
+public class TransacaoService {
 
-    private final PilaMineradoRepository repository;
+    private final TransacaoRepository repository;
 
-    public PilaMineradoService(PilaMineradoRepository repository) {
+    public TransacaoService(TransacaoRepository repository) {
         this.repository = repository;
     }
 
