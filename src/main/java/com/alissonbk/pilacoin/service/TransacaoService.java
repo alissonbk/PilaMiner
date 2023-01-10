@@ -11,12 +11,15 @@ import java.time.Instant;
 public class TransacaoService {
 
     private final TransacaoRepository repository;
+    private final WebSocketServerService webSocketServerService;
 
-    public TransacaoService(TransacaoRepository repository) {
+    public TransacaoService(TransacaoRepository repository, WebSocketServerService webSocketServerService) {
         this.repository = repository;
+        this.webSocketServerService = webSocketServerService;
     }
 
     public void savePilaMinerado(PilaCoin pilaCoin) {
+        webSocketServerService.notifyPilaMinerado(pilaCoin.toString());
         Transacao transacao = new Transacao();
         transacao.setPilaCoinBlocoJson(pilaCoin);
         transacao.setDataAcao(Instant.now());

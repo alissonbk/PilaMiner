@@ -34,7 +34,7 @@ public class InitializationService {
         MineracaoService mineracaoService = new MineracaoService(pilaMineradoService, mineracao); // instancia mineracao service
 
         if ( this.handleUsuario(mineracao.getPublicKey(), mineracao.getPrivateKey()) && this.webSocketClientService.webSocketCreateConnection() ) {
-            mineracaoService.miningLoop();
+            //mineracaoService.miningLoop();
         } else {
             System.out.println("Falha ao iniciar loop de mineração");
         }

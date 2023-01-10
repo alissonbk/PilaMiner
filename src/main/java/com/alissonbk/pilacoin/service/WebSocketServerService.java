@@ -22,8 +22,8 @@ public class WebSocketServerService {
         //System.out.println(response.getContent());
         //notificationService.sendGlobalNotification();
         messagingTemplate.convertAndSendToUser(
-                usuarioService.getLoggedUser().getName(),
-                "/topic/pilaminerado", response);
+                usuarioService.USUARIO_LOGADO.getName(),
+                "/topic/mineracaoPila", response);
     }
 
 

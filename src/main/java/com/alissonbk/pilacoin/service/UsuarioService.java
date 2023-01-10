@@ -20,6 +20,7 @@ public class UsuarioService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    public static Usuario USUARIO_LOGADO;
 
 
     public UsuarioService(UsuarioRepository usuarioRepository,
@@ -52,6 +53,7 @@ public class UsuarioService {
                         SecurityContextHolder.getContext().setAuthentication(auth);
 
                         u.setAccessToken(this.jwtTokenProvider.createToken(u));
+                        USUARIO_LOGADO = u;
                         return u;
                     }
                     throw new SecurityException("Falha ao autenticar usuario");
