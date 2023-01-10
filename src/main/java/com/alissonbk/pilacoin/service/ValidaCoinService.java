@@ -1,9 +1,10 @@
 package com.alissonbk.pilacoin.service;
 
-import com.alissonbk.pilacoin.dto.recieve.ValidaCoinRecieveDTO;
-import com.alissonbk.pilacoin.dto.send.ValidaCoinSendDTO;
+import com.alissonbk.pilacoin.dto.ValidaCoinRecieveDTO;
+import com.alissonbk.pilacoin.dto.ValidaCoinSendDTO;
 import com.alissonbk.pilacoin.http.PilaCoinClientHttp;
 import com.alissonbk.pilacoin.model.PilaCoin;
+import com.alissonbk.pilacoin.model.TipoPilaBloco;
 import com.alissonbk.pilacoin.model.ValidacaoPilaBloco;
 import com.alissonbk.pilacoin.repository.ValidacaoPilaBlocoRepository;
 import com.alissonbk.pilacoin.util.Util;
@@ -68,7 +69,7 @@ public class ValidaCoinService {
         ValidacaoPilaBloco validacaoPilaBloco = new ValidacaoPilaBloco();
         Map<String, Object> pilaCoindSendDTO = UtilGenerators.generateObjectFromJson(json);
         validacaoPilaBloco.setPilaBlocoJson(pilaCoindSendDTO);
-        validacaoPilaBloco.setTipoPilaBloco(ValidacaoPilaBloco.TipoPilaBloco.PILA_COIN);
+        validacaoPilaBloco.setTipoPilaBloco(TipoPilaBloco.PILA_COIN);
         validacaoPilaBloco.setNonce(pilaCoindSendDTO.get("nonce").toString());
         validacaoPilaBloco.setChaveCriador(pilaCoindSendDTO.get("chavePublica").toString());
         validacaoPilaBloco.setDataAcao(Instant.now());

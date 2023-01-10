@@ -28,6 +28,7 @@ public class MineracaoService {
     private Mineracao mineracao;
     private final PilaCoinClientHttp pilaCoinClientHttp = new PilaCoinClientHttp();
     private List<PilaCoin> pilaCoinsRegistrados = new ArrayList<>();
+    public static boolean MINERACAO_IS_RUNNING = true;
 
 
     public MineracaoService(PilaMineradoService pilaMineradoService, Mineracao mineracao){
@@ -59,7 +60,7 @@ public class MineracaoService {
     private Thread pilaCoinProducer(Mineracao mineracao) {
         // PRODUCER
         return new Thread(() -> {
-             while (true) {
+             while (MINERACAO_IS_RUNNING) {
                 if (FILA_COIN.size() == FILA_SIZE) {
                     Thread.yield();
                 } else {
@@ -86,7 +87,7 @@ public class MineracaoService {
      * */
     private Thread pilaCoinConsumer(Mineracao mineracao) {
         return new Thread(() -> {
-            while (true) {
+            while (MINERACAO_IS_RUNNING) {
                 if (!FILA_COIN.isEmpty()) {
                     mineracao.setNumTentativas(mineracao.getNumTentativas()+1);
                     try {

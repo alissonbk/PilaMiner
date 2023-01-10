@@ -1,6 +1,6 @@
 package com.alissonbk.pilacoin.handler;
 
-import com.alissonbk.pilacoin.dto.recieve.ValidaCoinRecieveDTO;
+import com.alissonbk.pilacoin.dto.ValidaCoinRecieveDTO;
 import com.alissonbk.pilacoin.model.Mineracao;
 import com.alissonbk.pilacoin.service.ValidaCoinService;
 import lombok.*;
@@ -16,13 +16,13 @@ import java.util.Objects;
 
 
 @Service
-public class WebSocketSessionHandler implements StompSessionHandler {
+public class WebSocketClientSessionHandler implements StompSessionHandler {
 
     private final ValidaCoinService validaCoinService;
 
     public static BigInteger dificuldade;
 
-    public WebSocketSessionHandler(ValidaCoinService validaCoinService) {
+    public WebSocketClientSessionHandler(ValidaCoinService validaCoinService) {
         this.validaCoinService = validaCoinService;
     }
 
@@ -93,7 +93,7 @@ public class WebSocketSessionHandler implements StompSessionHandler {
 
     @SneakyThrows
     private void handleDificuldade(Object o)  {
-        dificuldade = new BigInteger(((WebSocketSessionHandler.DificuldadeRet) o).getDificuldade(), 16);
+        dificuldade = new BigInteger(((WebSocketClientSessionHandler.DificuldadeRet) o).getDificuldade(), 16);
         if (!Objects.equals(Mineracao.DIFICULDADE, dificuldade)) {
             System.out.println("Dificuldade Modificada!!!!");
             System.out.println(dificuldade);

@@ -1,6 +1,6 @@
 package com.alissonbk.pilacoin.service;
 
-import com.alissonbk.pilacoin.handler.WebSocketSessionHandler;
+import com.alissonbk.pilacoin.handler.WebSocketClientSessionHandler;
 import com.alissonbk.pilacoin.util.ServerEndpoints;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.stereotype.Service;
@@ -8,10 +8,10 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 @Service
-public class WebSocketService {
-    private final WebSocketSessionHandler sessionHandler;
+public class WebSocketClientService {
+    private final WebSocketClientSessionHandler sessionHandler;
 
-    public WebSocketService(WebSocketSessionHandler sessionHandler) {
+    public WebSocketClientService(WebSocketClientSessionHandler sessionHandler) {
         this.sessionHandler = sessionHandler;
     }
 

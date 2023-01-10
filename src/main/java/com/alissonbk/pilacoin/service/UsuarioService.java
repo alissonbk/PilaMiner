@@ -7,6 +7,7 @@ import com.alissonbk.pilacoin.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,19 @@ public class UsuarioService {
 
     public boolean verifyUserExistsOnDB(Usuario u) {
         return usuarioRepository.findByEmailIgnoreCase(u.getEmail()).isPresent();
+    }
+
+    public Usuario getLoggedUser(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails)principal).getUsername();
+            Usuario usuario = this.usuarioRepository.findUsuarioByEmail(username);
+            return usuario;
+        } else {
+            String username = principal.toString();
+            Usuario usuario = this.usuarioRepository.findUsuarioByEmail(username);
+            return usuario;
+        }
     }
 }
 

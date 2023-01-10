@@ -1,4 +1,4 @@
-package com.alissonbk.pilacoin.dto.recieve;
+package com.alissonbk.pilacoin.dto;
 
 
 import com.alissonbk.pilacoin.model.PilaCoin;

@@ -15,14 +15,14 @@ public class InitializationService {
     private final KeyGeneratorService keyGeneratorService;
     private final UsuarioClientHttp usuarioClientHttp;
     private final UsuarioService usuarioService;
-    private final WebSocketService webSocketService;
+    private final WebSocketClientService webSocketClientService;
     private final PilaMineradoService pilaMineradoService;
 
-    public InitializationService(KeyGeneratorService keyGeneratorService, UsuarioClientHttp usuarioClientHttp, UsuarioService usuarioService, WebSocketService webSocketService, PilaMineradoService pilaMineradoService) {
+    public InitializationService(KeyGeneratorService keyGeneratorService, UsuarioClientHttp usuarioClientHttp, UsuarioService usuarioService, WebSocketClientService webSocketClientService, PilaMineradoService pilaMineradoService) {
         this.keyGeneratorService = keyGeneratorService;
         this.usuarioClientHttp = usuarioClientHttp;
         this.usuarioService = usuarioService;
-        this.webSocketService = webSocketService;
+        this.webSocketClientService = webSocketClientService;
         this.pilaMineradoService = pilaMineradoService;
     }
 
@@ -33,7 +33,7 @@ public class InitializationService {
         System.out.println("\n");
         MineracaoService mineracaoService = new MineracaoService(pilaMineradoService, mineracao); // instancia mineracao service
 
-        if ( this.handleUsuario(mineracao.getPublicKey(), mineracao.getPrivateKey()) && this.webSocketService.webSocketCreateConnection() ) {
+        if ( this.handleUsuario(mineracao.getPublicKey(), mineracao.getPrivateKey()) && this.webSocketClientService.webSocketCreateConnection() ) {
             mineracaoService.miningLoop();
         } else {
             System.out.println("Falha ao iniciar loop de mineração");
@@ -52,12 +52,14 @@ public class InitializationService {
         usuario.setEmail("alisson@email.com");
         usuario.setPassword("$2a$12$xkgBKv3JxFP/wILLd6j.R.2lZjxa2D.LNfVkwoKJXefbFFcd7XAQK");
 
+
         if (!usuarioService.verifyUserExistsOnDB(usuario)) {
             if (usuarioService.saveUser(usuario)) {
                 Usuario clientHttpUser = this.usuarioClientHttp.createUser(usuario);
                 return clientHttpUser != null;
             }
-        }
+        }//else return true;
+
         return false;
     }
 }

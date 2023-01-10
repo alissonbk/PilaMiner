@@ -1,7 +1,7 @@
 package com.alissonbk.pilacoin.service;
 
 import com.alissonbk.pilacoin.model.PilaCoin;
-import com.alissonbk.pilacoin.model.PilaMinerado;
+import com.alissonbk.pilacoin.model.Transacao;
 import com.alissonbk.pilacoin.repository.PilaMineradoRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +17,11 @@ public class PilaMineradoService {
     }
 
     public void savePilaMinerado(PilaCoin pilaCoin) {
-        PilaMinerado pilaMinerado = new PilaMinerado();
-        pilaMinerado.setPilaCoinJson(pilaCoin);
-        pilaMinerado.setDataAcao(Instant.now());
-        pilaMinerado.setNonce(pilaCoin.getNonce());
-        pilaMinerado.setChaveCriador(pilaCoin.getChaveCriador());
-        this.repository.save(pilaMinerado);
+        Transacao transacao = new Transacao();
+        transacao.setPilaCoinBlocoJson(pilaCoin);
+        transacao.setDataAcao(Instant.now());
+        transacao.setNonce(pilaCoin.getNonce());
+        transacao.setChaveCriador(pilaCoin.getChaveCriador());
+        this.repository.save(transacao);
     }
 }

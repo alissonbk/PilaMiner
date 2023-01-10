@@ -52,10 +52,4 @@ public class ValidacaoPilaBloco {
     @NotNull
     @Column(nullable = false)
     private boolean isOutroUsuario;
-
-
-    public enum TipoPilaBloco {
-        PILA_COIN,
-        BLOCO
-    }
 }

@@ -8,14 +8,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.security.auth.Subject;
 import javax.validation.constraints.NotNull;
+import java.security.Principal;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Usuario implements Principal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,4 +55,13 @@ public class Usuario {
     @JsonProperty("access_token")
     private String accessToken;
 
+    @Override
+    public String getName() {
+        return this.email;
+    }
+
+    @Override
+    public boolean implies(Subject subject) {
+        return Principal.super.implies(subject);
+    }
 }

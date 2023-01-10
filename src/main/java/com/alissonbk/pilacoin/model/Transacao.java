@@ -16,7 +16,7 @@ import java.time.Instant;
         @TypeDef(name = "json", typeClass = JsonStringType.class),
         @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class),
 })
-public class PilaMinerado {
+public class Transacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +26,13 @@ public class PilaMinerado {
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "json")
-    private PilaCoin pilaCoinJson;
+    private PilaCoin pilaCoinBlocoJson;
 
     @Column(columnDefinition = "text")
     private String nonce;
 
     @Column(columnDefinition = "text")
     private String chaveCriador;
+
+    private TipoPilaBloco tipoTransacao;
 }

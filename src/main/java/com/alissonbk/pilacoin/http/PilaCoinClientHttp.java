@@ -1,6 +1,5 @@
 package com.alissonbk.pilacoin.http;
 
-import com.alissonbk.pilacoin.dto.send.ValidaCoinSendDTO;
 import com.alissonbk.pilacoin.model.PilaCoin;
 import com.alissonbk.pilacoin.util.ServerEndpoints;
 import lombok.SneakyThrows;
