@@ -45,7 +45,7 @@ public class MineracaoService {
      * Executando forma paralela o numero de tentativas aumentou da média de 280k a cada 20s para 300k a cada 20s
      * */
     public void miningLoop() throws InterruptedException {
-        System.out.println("Número total de threads: " + numThreads);
+        System.out.println("Loop de Mineração iniciado! - Threads: " + numThreads);
         while (Mineracao.DIFICULDADE == null) {
             Thread.sleep(500);
         }

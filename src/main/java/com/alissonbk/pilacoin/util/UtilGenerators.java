@@ -54,6 +54,23 @@ public class UtilGenerators {
         return new BigInteger(hash).abs();
     }
 
+    public static byte[] generateHashByteArray(String message) {
+        byte[] hash = null;
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            hash = md.digest(message.getBytes(StandardCharsets.UTF_8));
+        }catch (NoSuchAlgorithmException e) {
+            System.out.println("Algoritmo para gerar HASH incorreto!");
+            e.printStackTrace();
+        }
+        if (hash == null) {
+            throw new RuntimeException("Falha ao gerar HASH (a hash gerada é null)");
+        }
+
+        return hash;
+    }
+
     @SneakyThrows
     public static String generateSignature(ValidaCoinSendDTO validaCoinSendDTO) {
         String json = UtilGenerators.generateJSON(validaCoinSendDTO);

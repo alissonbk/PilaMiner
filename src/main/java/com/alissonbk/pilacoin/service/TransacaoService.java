@@ -3,6 +3,7 @@ package com.alissonbk.pilacoin.service;
 import com.alissonbk.pilacoin.model.PilaCoin;
 import com.alissonbk.pilacoin.model.Transacao;
 import com.alissonbk.pilacoin.repository.TransacaoRepository;
+import com.alissonbk.pilacoin.util.UtilGenerators;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -19,7 +20,7 @@ public class TransacaoService {
     }
 
     public void savePilaMinerado(PilaCoin pilaCoin) {
-        webSocketServerService.notifyPilaMinerado(pilaCoin.toString());
+        webSocketServerService.notifyPilaMinerado(UtilGenerators.generateJSON(pilaCoin));
         Transacao transacao = new Transacao();
         transacao.setPilaCoinBlocoJson(pilaCoin);
         transacao.setDataAcao(Instant.now());
