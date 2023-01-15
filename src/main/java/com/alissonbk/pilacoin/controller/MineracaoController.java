@@ -3,6 +3,8 @@ package com.alissonbk.pilacoin.controller;
 import com.alissonbk.pilacoin.service.MineracaoService;
 import com.alissonbk.pilacoin.service.TransacaoService;
 import com.alissonbk.pilacoin.service.UsuarioService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +23,13 @@ public class MineracaoController {
     }
 
     @PostMapping("/startStopLoop")
-    void startMineracaoLoop() throws InterruptedException {
-        mineracaoService.startStopLoop(usuarioService.getLoggedUser(), transacaoService);
+    ResponseEntity<Void> startMineracaoLoop() throws InterruptedException {
+        try {
+            mineracaoService.startStopLoop(usuarioService.getLoggedUser(), transacaoService);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

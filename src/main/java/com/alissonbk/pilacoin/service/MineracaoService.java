@@ -29,7 +29,7 @@ public class MineracaoService {
     private Mineracao mineracao;
     private final PilaCoinClientHttp pilaCoinClientHttp = new PilaCoinClientHttp();
     private List<PilaCoin> pilaCoinsRegistrados = new ArrayList<>();
-    public static boolean MINERACAO_IS_RUNNING = true;
+    public static boolean MINERACAO_IS_RUNNING = false;
 
 
     public MineracaoService(TransacaoService transacaoService, Mineracao mineracao){

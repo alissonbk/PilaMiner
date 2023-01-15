@@ -10,10 +10,7 @@ import lombok.SneakyThrows;
 import javax.crypto.Cipher;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Map;
@@ -75,10 +72,10 @@ public class UtilGenerators {
     public static String generateSignature(ValidaCoinSendDTO validaCoinSendDTO) {
         String json = UtilGenerators.generateJSON(validaCoinSendDTO);
         Cipher cipher = Cipher.getInstance("RSA");
-        PublicKey publicKey =
+        PrivateKey privateKey =
                 KeyFactory.getInstance("RSA")
-                        .generatePublic(new X509EncodedKeySpec(KeyGeneratorService.getPublicKeyBytes()));
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+                        .generatePrivate(new X509EncodedKeySpec(KeyGeneratorService.getPrivateKeyBytes()));
+        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
         byte[] hash = UtilGenerators.generateHash(json).toByteArray();
         return Base64.getEncoder().encodeToString(cipher.doFinal(hash));
     }

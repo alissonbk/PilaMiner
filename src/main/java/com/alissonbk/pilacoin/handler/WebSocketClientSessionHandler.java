@@ -35,7 +35,7 @@ public class WebSocketClientSessionHandler implements StompSessionHandler {
         /*descobre novo bloco*/
         stompSession.subscribe("/topic/descobrirNovoBloco", this);
         /*recebe bloco para validar*/
-        stompSession.subscribe("/ttopic/validaBloco", this);
+        stompSession.subscribe("/topic/validaBloco", this);
     }
 
     @Override

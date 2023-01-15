@@ -15,7 +15,7 @@ public class ValidaCoinSendDTO implements Serializable {
     private String chavePublica;
     private byte[] hashPilaBloco;
     private String nonce;
-    //private String tipo = "PILA";
+    private String tipo = "PILA";
 
 
     public ValidaCoinSendDTO() { }
