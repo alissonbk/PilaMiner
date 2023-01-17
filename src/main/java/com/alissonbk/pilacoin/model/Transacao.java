@@ -8,6 +8,7 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Entity
@@ -34,5 +35,11 @@ public class Transacao {
     @Column(columnDefinition = "text")
     private String chaveCriador;
 
-    private TipoPilaBloco tipoTransacao;
+    @NotNull
+    @Column(nullable = false)
+    private TipoPilaBloco tipoPilaBloco;
+
+    @NotNull
+    @Column(nullable = false)
+    private TipoTransacao tipoTransacao;
 }

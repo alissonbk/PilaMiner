@@ -22,8 +22,8 @@ public class Usuario implements Principal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     public static final String NOME = "Alisson Billig Kroth";
-    //public int id = null;
 
     @NotNull
     @Column(nullable = false)
@@ -32,10 +32,12 @@ public class Usuario implements Principal {
     @NotNull
     @Column(columnDefinition = "text", nullable = false, unique = true)
     private String chavePublica;
+
     private byte[] chavePublicaBytes;
 
     @Column(columnDefinition = "text", nullable = false, unique = true)
     private String chavePrivada;
+
     private byte[] chavePrivadaBytes;
 
     @NotNull
