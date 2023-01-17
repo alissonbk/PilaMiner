@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ValidaCoinRecieveDTO {
-    private String assinaturaMaster;
+    //private String assinaturaMaster;
     private String chaveCriador;
     private Date dataCriacao;
     private String nonce;

@@ -14,16 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
 
 @Service
 public class ValidaCoinService {
     private final ValidacaoPilaBlocoRepository repository;
+    private final WebSocketServerService webSocketServerService;
 
-    public ValidaCoinService(ValidacaoPilaBlocoRepository repository) {
+    public ValidaCoinService(ValidacaoPilaBlocoRepository repository, WebSocketServerService webSocketServerService) {
         this.repository = repository;
+        this.webSocketServerService = webSocketServerService;
     }
 
     public String validaCoin(ValidaCoinRecieveDTO validaCoinRecieveDTO) {
@@ -76,6 +77,7 @@ public class ValidaCoinService {
         validacaoPilaBloco.setDataAcao(Instant.now());
         validacaoPilaBloco.setOutroUsuario(true);
         this.repository.save(validacaoPilaBloco);
+        this.webSocketServerService.notifyValidacaoPila(UtilGenerators.generateJSON(validacaoPilaBloco));
     }
 
 }

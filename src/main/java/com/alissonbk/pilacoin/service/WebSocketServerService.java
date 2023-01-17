@@ -24,5 +24,12 @@ public class WebSocketServerService {
         messagingTemplate.convertAndSend("/topic/mineracaoPila", response);
     }
 
+    public void notifyValidacaoPila(final String message){
+        ResponseMessage response = new ResponseMessage(message);
+        //System.out.println(response.getContent());
+        //notificationService.sendGlobalNotification();
+        messagingTemplate.convertAndSend("/topic/validacaoPilaBloco", response);
+    }
+
 
 }

@@ -23,7 +23,6 @@ public class TransacaoService {
     }
 
     public void savePilaMinerado(PilaCoin pilaCoin) {
-        webSocketServerService.notifyPilaMinerado(UtilGenerators.generateJSON(pilaCoin));
         Transacao transacao = new Transacao();
         transacao.setPilaCoinBlocoJson(pilaCoin);
         transacao.setDataAcao(Instant.now());
@@ -32,6 +31,7 @@ public class TransacaoService {
         transacao.setTipoPilaBloco(TipoPilaBloco.PILA_COIN);
         transacao.setTipoTransacao(TipoTransacao.MINERACAO);
         this.repository.save(transacao);
+        webSocketServerService.notifyPilaMinerado(UtilGenerators.generateJSON(pilaCoin));
     }
 
     public NumPilasDTO getNumPilas() {
