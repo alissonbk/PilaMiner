@@ -1,7 +1,9 @@
 package com.alissonbk.pilacoin.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ import org.hibernate.annotations.TypeDefs;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 @Getter
@@ -31,7 +34,8 @@ public class ValidacaoPilaBloco {
 
     @NotNull
     @Column(nullable = false)
-    private Instant dataAcao;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC", shape = JsonFormat.Shape.STRING)
+    private Date dataAcao;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "json")

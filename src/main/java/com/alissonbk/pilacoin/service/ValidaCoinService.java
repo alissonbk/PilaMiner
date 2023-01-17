@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -74,7 +75,7 @@ public class ValidaCoinService {
         validacaoPilaBloco.setTipoPilaBloco(TipoPilaBloco.PILA_COIN);
         validacaoPilaBloco.setNonce(pilaCoindSendDTO.get("nonce").toString());
         validacaoPilaBloco.setChaveCriador(pilaCoindSendDTO.get("chavePublica").toString());
-        validacaoPilaBloco.setDataAcao(Instant.now());
+        validacaoPilaBloco.setDataAcao(Date.from(Instant.now()));
         validacaoPilaBloco.setOutroUsuario(true);
         this.repository.save(validacaoPilaBloco);
         this.webSocketServerService.notifyValidacaoPila(UtilGenerators.generateJSON(validacaoPilaBloco));
