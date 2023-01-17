@@ -37,9 +37,11 @@ public class Transacao {
 
     @NotNull
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TipoPilaBloco tipoPilaBloco;
 
     @NotNull
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TipoTransacao tipoTransacao;
 }

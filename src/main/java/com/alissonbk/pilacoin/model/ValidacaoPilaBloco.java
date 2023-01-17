@@ -47,6 +47,7 @@ public class ValidacaoPilaBloco {
 
     @NotNull
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TipoPilaBloco tipoPilaBloco;
 
     @NotNull
