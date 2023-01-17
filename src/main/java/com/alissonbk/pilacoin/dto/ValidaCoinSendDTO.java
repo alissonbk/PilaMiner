@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @JsonPropertyOrder(alphabetic=true)
 public class ValidaCoinSendDTO implements Serializable {
-    private String assinatura;
+    private byte[] assinatura;
     private String chavePublica;
     private byte[] hashPilaBloco;
     private String nonce;

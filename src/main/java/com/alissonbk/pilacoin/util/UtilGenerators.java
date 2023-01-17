@@ -11,6 +11,7 @@ import javax.crypto.Cipher;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Map;
@@ -69,15 +70,18 @@ public class UtilGenerators {
     }
 
     @SneakyThrows
-    public static String generateSignature(ValidaCoinSendDTO validaCoinSendDTO) {
+    public static byte[] generateSignature(ValidaCoinSendDTO validaCoinSendDTO) {
+        Signature privateSignature = Signature.getInstance("SHA256withRSA");
         String json = UtilGenerators.generateJSON(validaCoinSendDTO);
-        Cipher cipher = Cipher.getInstance("RSA");
         PrivateKey privateKey =
                 KeyFactory.getInstance("RSA")
-                        .generatePrivate(new X509EncodedKeySpec(KeyGeneratorService.getPrivateKeyBytes()));
-        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-        byte[] hash = UtilGenerators.generateHash(json).toByteArray();
-        return Base64.getEncoder().encodeToString(cipher.doFinal(hash));
+                        .generatePrivate(new PKCS8EncodedKeySpec(KeyGeneratorService.getPrivateKeyBytes()));
+
+        privateSignature.initSign(privateKey);
+        privateSignature.update(json.getBytes(StandardCharsets.UTF_8));
+        byte[] signature = privateSignature.sign();
+
+        return signature;
     }
 
     @SneakyThrows

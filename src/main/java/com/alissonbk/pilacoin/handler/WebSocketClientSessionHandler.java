@@ -40,7 +40,7 @@ public class WebSocketClientSessionHandler implements StompSessionHandler {
 
     @Override
     public void handleException(StompSession stompSession, StompCommand stompCommand, StompHeaders stompHeaders, byte[] bytes, Throwable throwable) {
-        System.out.println("exception isConnected? " + stompSession.isConnected() +
+        System.out.println("exception:" + throwable +"isConnected? " + stompSession.isConnected() +
                 " Stomp Coommand: " + stompCommand + " StompHeaders: " + stompHeaders);
     }
 
