@@ -29,7 +29,7 @@ public class UsuarioClientHttp {
     public Usuario createUser(Usuario newUser) {
 
         // verifica se o usuario ja está cadastrado
-        Boolean cadastrado = this.usuarioJaExiste(newUser.getChavePublicaBytes());
+        Boolean cadastrado = this.getUsuarioByChave(newUser.getChavePublica()).getChavePublica() != null;
 
 
         //se não contém o usuario, cadastra
@@ -62,7 +62,7 @@ public class UsuarioClientHttp {
             if (response != null && response.getBody() != null) {
                 System.out.println(response.getBody());
                 if(response.getStatusCode() == HttpStatus.ACCEPTED || response.getStatusCode() == HttpStatus.CREATED) {
-                    if (this.usuarioJaExiste(newUser.getChavePublicaBytes())) {
+                    if (this.getUsuarioByChave(newUser.getChavePublica()).getChavePublica() != null) {
                         System.out.println("Usuario Cadastrado com sucesso!");
                         return newUser;
                     }
@@ -84,26 +84,29 @@ public class UsuarioClientHttp {
 //    }
 
     @SneakyThrows
-    private Boolean usuarioJaExiste(byte[] chavePublicaBytes) {
+    public Usuario getUsuarioByChave(String chavePublica) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Usuario> usuario = null;
 
         try {
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(ServerEndpoints.FIND_USER_BY_KEY).toURI())
-                    .contentType(MediaType.APPLICATION_JSON).body(Base64.getEncoder().encodeToString(chavePublicaBytes));
+                    .contentType(MediaType.APPLICATION_JSON).body(chavePublica);
             usuario = restTemplate.exchange(requestEntity, Usuario.class);
         } catch (HttpClientErrorException e) {
-            return false;
+            return new Usuario();
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
 
-        if ( usuario != null && usuario.getBody() != null && usuario.getBody().getChavePublica()
-                .equals(Base64.getEncoder().encodeToString(chavePublicaBytes))) {
-            System.out.println("Usuario já está cadastrado com esta chave publica!");
-            return true;
+        if ( usuario != null && usuario.getBody() != null) {
+//            System.out.println(usuario);
+//            System.out.println("Usuario já está cadastrado com esta chave publica!");
+            var u = new Usuario();
+            u.setNome(usuario.getBody().getNome());
+            u.setChavePublica(usuario.getBody().getChavePublica());
+            return u;
         }
 
-        return false;
+        return new Usuario();
     }
 }
