@@ -76,7 +76,7 @@ public class WebSocketClientSessionHandler implements StompSessionHandler {
             case ("/topic/dificuldade") -> handleDificuldade(o);
             case ("/topic/validaMineracao") -> handleValidacaoPila(o);
             case ("/topic/descobrirNovoBloco") -> handleNovoBloco(o);
-            case ("/topic/validaBloco") -> handleValidaBloco(o);
+            case ("/topic/validaBloco") -> handleValidaBlocoOutroUsuario(o);
         }
 
     }
@@ -116,7 +116,7 @@ public class WebSocketClientSessionHandler implements StompSessionHandler {
         System.out.println("Novo bloco: " + o.toString());
     }
 
-    private void handleValidaBloco(Object o) {
+    private void handleValidaBlocoOutroUsuario(Object o) {
         System.out.println("Valida bloco: " + o.toString());
     }
 

@@ -1,10 +1,7 @@
 package com.alissonbk.pilacoin.service;
 
 import com.alissonbk.pilacoin.dto.NumPilasDTO;
-import com.alissonbk.pilacoin.model.PilaCoin;
-import com.alissonbk.pilacoin.model.TipoPilaBloco;
-import com.alissonbk.pilacoin.model.TipoTransacao;
-import com.alissonbk.pilacoin.model.Transacao;
+import com.alissonbk.pilacoin.model.*;
 import com.alissonbk.pilacoin.repository.TransacaoRepository;
 import com.alissonbk.pilacoin.util.UtilGenerators;
 import org.springframework.stereotype.Service;
@@ -30,6 +27,7 @@ public class TransacaoService {
         transacao.setChaveCriador(pilaCoin.getChaveCriador());
         transacao.setTipoPilaBloco(TipoPilaBloco.PILA_COIN);
         transacao.setTipoTransacao(TipoTransacao.MINERACAO);
+        transacao.setStatusTransferencia(StatusTransferencia.LIVRE);
         this.repository.save(transacao);
         webSocketServerService.notifyPilaMinerado(UtilGenerators.generateJSON(pilaCoin));
     }

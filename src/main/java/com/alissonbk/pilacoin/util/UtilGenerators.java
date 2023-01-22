@@ -70,9 +70,8 @@ public class UtilGenerators {
     }
 
     @SneakyThrows
-    public static byte[] generateSignature(ValidaCoinSendDTO validaCoinSendDTO) {
+    public static byte[] generateSignature(String json) {
         Signature privateSignature = Signature.getInstance("SHA256withRSA");
-        String json = UtilGenerators.generateJSON(validaCoinSendDTO);
         PrivateKey privateKey =
                 KeyFactory.getInstance("RSA")
                         .generatePrivate(new PKCS8EncodedKeySpec(KeyGeneratorService.getPrivateKeyBytes()));

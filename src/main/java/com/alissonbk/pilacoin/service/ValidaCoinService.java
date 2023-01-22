@@ -57,7 +57,8 @@ public class ValidaCoinService {
             validaCoinSendDTO.setNonce(pilaCoin.getNonce());
             validaCoinSendDTO.setHashPilaBloco(UtilGenerators.generateHashByteArray(pilaJson));
             validaCoinSendDTO.setChavePublica(KeyGeneratorService.getPublicKeyString());
-            validaCoinSendDTO.setAssinatura(UtilGenerators.generateSignature(validaCoinSendDTO));
+            final String jsonValidaCoinSendDTO = UtilGenerators.generateJSON(validaCoinSendDTO);
+            validaCoinSendDTO.setAssinatura(UtilGenerators.generateSignature(jsonValidaCoinSendDTO));
             final String json = UtilGenerators.generateJSON(validaCoinSendDTO);
             //System.out.println(json);
             return json;

@@ -65,9 +65,7 @@ public class PilaCoinClientHttp {
                     new URL(ServerEndpoints.VALIDATE_COIN_OTHER_USER).toURI()
             ).contentType(MediaType.APPLICATION_JSON).body(validaCoinSendJson);
             response = restTemplate.exchange(requestEntity, String.class);
-        } catch (HttpClientErrorException e) {
-            e.printStackTrace();
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
         System.out.println("Response Body: " + response.getBody());

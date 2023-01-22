@@ -44,4 +44,9 @@ public class Transacao {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TipoTransacao tipoTransacao;
+
+    @NotNull
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusTransferencia statusTransferencia;
 }

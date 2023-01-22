@@ -69,12 +69,10 @@ public class UsuarioService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             String username = ((UserDetails)principal).getUsername();
-            Usuario usuario = this.usuarioRepository.findUsuarioByEmail(username);
-            return usuario;
+            return this.usuarioRepository.findUsuarioByEmail(username);
         } else {
             String username = principal.toString();
-            Usuario usuario = this.usuarioRepository.findUsuarioByEmail(username);
-            return usuario;
+            return this.usuarioRepository.findUsuarioByEmail(username);
         }
     }
 }
