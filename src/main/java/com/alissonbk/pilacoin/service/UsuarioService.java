@@ -1,7 +1,9 @@
 package com.alissonbk.pilacoin.service;
 
 import com.alissonbk.pilacoin.dto.LoginDTO;
+import com.alissonbk.pilacoin.model.LoginLog;
 import com.alissonbk.pilacoin.model.Usuario;
+import com.alissonbk.pilacoin.repository.LoginLogRepository;
 import com.alissonbk.pilacoin.repository.UsuarioRepository;
 import com.alissonbk.pilacoin.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,20 +15,22 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 
 @Service
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
-
+    private final LoginLogRepository loginLogRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     public static Usuario USUARIO_LOGADO;
 
 
     public UsuarioService(UsuarioRepository usuarioRepository,
-                          AuthenticationManager authenticationManager,
+                          LoginLogRepository loginLogRepository, AuthenticationManager authenticationManager,
                           JwtTokenProvider jwtTokenProvider) {
         this.usuarioRepository = usuarioRepository;
+        this.loginLogRepository = loginLogRepository;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -53,6 +57,7 @@ public class UsuarioService {
                         SecurityContextHolder.getContext().setAuthentication(auth);
 
                         u.setAccessToken(this.jwtTokenProvider.createToken(u));
+                        this.saveLogs(u);
                         USUARIO_LOGADO = u;
                         return u;
                     }
@@ -74,6 +79,13 @@ public class UsuarioService {
             String username = principal.toString();
             return this.usuarioRepository.findUsuarioByEmail(username);
         }
+    }
+
+    private void saveLogs(Usuario u) {
+        var log = new LoginLog();
+        log.setUsuario(u);
+        log.setDataHora(Instant.now());
+        loginLogRepository.save(log);
     }
 }
 
