@@ -15,12 +15,12 @@ public class TransferenciaController {
         this.transferenciaService = transferenciaService;
     }
 
-    @PostMapping("transferir/{chave}")
-    public ResponseEntity<?> enviarParaChaveDestino(@RequestParam String chave) {
-        if (this.transferenciaService.enviarParaChaveDestino(chave)) {
-            return ResponseEntity.status(HttpStatus.OK).build();
+    @PostMapping("transferir")
+    public ResponseEntity<String> enviarParaChaveDestino(@RequestBody ChaveDTO chave) {
+        if (this.transferenciaService.enviarParaChaveDestino(chave.getValue())) {
+            return ResponseEntity.status(HttpStatus.OK).body("Transferido com sucesso");
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("erro");
     }
 
     @PostMapping("validarChave")

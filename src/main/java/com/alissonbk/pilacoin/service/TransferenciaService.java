@@ -1,7 +1,10 @@
 package com.alissonbk.pilacoin.service;
 
+import com.alissonbk.pilacoin.http.BlocoClientHttp;
 import com.alissonbk.pilacoin.http.TransferenciaClientHttp;
 import com.alissonbk.pilacoin.http.UsuarioClientHttp;
+import com.alissonbk.pilacoin.model.Bloco;
+import com.alissonbk.pilacoin.model.StatusTransferencia;
 import com.alissonbk.pilacoin.model.TipoPilaBloco;
 import com.alissonbk.pilacoin.model.Transferencia;
 import com.alissonbk.pilacoin.repository.TransacaoRepository;
@@ -12,19 +15,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class TransferenciaService {
     private final TransacaoRepository transacaoRepository;
     private final TransferenciaRepository transferenciaRepository;
     private final TransferenciaClientHttp transferenciaClientHttp;
+    private final BlocoClientHttp blocoClientHttp;
     private final UsuarioClientHttp usuarioClientHttp;
 
     public TransferenciaService(TransacaoRepository transacaoRepository, TransferenciaRepository transferenciaRepository,
-                                TransferenciaClientHttp http, UsuarioClientHttp usuarioClientHttp) {
+                                TransferenciaClientHttp http, BlocoClientHttp blocoClientHttp, UsuarioClientHttp usuarioClientHttp) {
         this.transacaoRepository = transacaoRepository;
         this.transferenciaRepository = transferenciaRepository;
         this.transferenciaClientHttp = http;
+        this.blocoClientHttp = blocoClientHttp;
         this.usuarioClientHttp = usuarioClientHttp;
     }
 
@@ -34,20 +40,27 @@ public class TransferenciaService {
     @Transactional
     public Boolean enviarParaChaveDestino(String chaveDestino) {
         var transacao = this.transacaoRepository
-                .findFirstByTipoPilaBlocoIs(TipoPilaBloco.PILA_COIN);
+                .findFirstByTipoPilaBlocoIsAndStatusTransferenciaIs(TipoPilaBloco.PILA_COIN,
+                        StatusTransferencia.LIVRE);
+        List<Bloco> blocos = blocoClientHttp.getAllBlocos();
 
         var transferencia = new Transferencia();
         transferencia.setChaveUsuarioDestino(chaveDestino);
         transferencia.setChaveUsuarioOrigem(KeyGeneratorService.getPublicKeyString());
         transferencia.setStatus(null); //FIXME
         transferencia.setNoncePila(transacao.getNonce());
-        transferencia.setIdBloco(0L); //FIXME
+        transferencia.setIdBloco(blocos.get(0).getNumeroBloco()); //FIXME
         transferencia.setDataTransacao(Date.from(Instant.now()));
         final String transferenciaJson = UtilGenerators.generateJSON(transferencia);
         transferencia.setAssinatura(UtilGenerators.generateSignature(transferenciaJson));
-        //TODO -> send HTTP
+        final String jsonToSend = UtilGenerators.generateJSON(transferencia);
 
-        this.transferenciaRepository.save(transferencia);
+        if (this.transferenciaClientHttp.transferir(jsonToSend)) {
+            this.transferenciaRepository.save(transferencia);
+            transacao.setStatusTransferencia(StatusTransferencia.TRANSFERIDO);
+            this.transacaoRepository.save(transacao);
+            return true;
+        }
         return false;
     }
 
