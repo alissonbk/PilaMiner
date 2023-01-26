@@ -4,7 +4,6 @@ import com.alissonbk.pilacoin.http.TransferenciaClientHttp;
 import com.alissonbk.pilacoin.http.UsuarioClientHttp;
 import com.alissonbk.pilacoin.model.TipoPilaBloco;
 import com.alissonbk.pilacoin.model.Transferencia;
-import com.alissonbk.pilacoin.model.Usuario;
 import com.alissonbk.pilacoin.repository.TransacaoRepository;
 import com.alissonbk.pilacoin.repository.TransferenciaRepository;
 import com.alissonbk.pilacoin.util.UtilGenerators;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
 
 @Service

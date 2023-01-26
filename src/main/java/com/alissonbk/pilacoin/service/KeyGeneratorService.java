@@ -1,7 +1,7 @@
 package com.alissonbk.pilacoin.service;
 
 
-import com.alissonbk.pilacoin.model.Mineracao;
+import com.alissonbk.pilacoin.configuration.MineracaoConfiguration;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
@@ -57,30 +57,6 @@ public class KeyGeneratorService {
 
         }
 
-    }
-
-    @SneakyThrows
-    public Mineracao generateMineracaoWithKeys() {
-        byte[] publicKeyBytes = Files.readAllBytes(Path.of(KeyGeneratorService.PUBLIC_KEY_RELATIVE_PATH));
-        System.out.println(("Chave publica Base64: " + Base64.getEncoder().encodeToString(publicKeyBytes)));
-
-
-        byte[] privateKeyBytes = Files.readAllBytes(Path.of(KeyGeneratorService.PRIVATE_KEY_RELATIVE_PATH));
-        System.out.println(("Chave privada Base64: " + Base64.getEncoder().encodeToString(privateKeyBytes)));
-
-        // keypair
-//        PublicKey publicKey = KeyFactory.getInstance("RSA")
-//                .generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-        //System.out.println(publicKey);
-
-//        PrivateKey privateKey = KeyFactory.getInstance("RSA")
-//                .generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
-        //System.out.println(privateKey);
-
-        //KeyPair keyPair = new KeyPair(publicKey, privateKey);
-
-
-        return new Mineracao(publicKeyBytes, privateKeyBytes);
     }
 
     @SneakyThrows

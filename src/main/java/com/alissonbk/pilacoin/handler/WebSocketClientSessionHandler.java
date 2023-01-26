@@ -1,7 +1,7 @@
 package com.alissonbk.pilacoin.handler;
 
 import com.alissonbk.pilacoin.dto.ValidaCoinRecieveDTO;
-import com.alissonbk.pilacoin.model.Mineracao;
+import com.alissonbk.pilacoin.configuration.MineracaoConfiguration;
 import com.alissonbk.pilacoin.service.ValidaCoinService;
 import lombok.*;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -94,11 +94,11 @@ public class WebSocketClientSessionHandler implements StompSessionHandler {
     @SneakyThrows
     private void handleDificuldade(Object o)  {
         dificuldade = new BigInteger(((WebSocketClientSessionHandler.DificuldadeRet) o).getDificuldade(), 16);
-        if (!Objects.equals(Mineracao.DIFICULDADE, dificuldade)) {
+        if (!Objects.equals(MineracaoConfiguration.DIFICULDADE, dificuldade)) {
             System.out.println("Dificuldade Modificada!!!!");
             System.out.println(dificuldade);
         }
-        Mineracao.DIFICULDADE = dificuldade;
+        MineracaoConfiguration.DIFICULDADE = dificuldade;
     }
 
     private void handleValidacaoPila(Object o) {

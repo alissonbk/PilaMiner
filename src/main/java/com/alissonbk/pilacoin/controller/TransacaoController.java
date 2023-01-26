@@ -20,10 +20,10 @@ public class TransacaoController {
     @GetMapping("get-pilas")
     public ResponseEntity<NumPilasDTO> getNumPilas() {
         try {
-            return new ResponseEntity(transacaoService.getNumPilas(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(transacaoService.getNumPilas());
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

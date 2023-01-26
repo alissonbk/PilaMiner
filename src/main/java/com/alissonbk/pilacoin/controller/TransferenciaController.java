@@ -25,7 +25,6 @@ public class TransferenciaController {
 
     @PostMapping("validarChave")
     public ResponseEntity<String> validarChave(@RequestBody ChaveDTO chave) {
-        System.out.println(chave.getValue());
         final String nomeUsuario = this.transferenciaService.validarChave(chave.getValue());
         if (nomeUsuario != null && nomeUsuario.length() > 0) {
             return ResponseEntity.status(HttpStatus.OK).body("Usuário encontrado: " + nomeUsuario);

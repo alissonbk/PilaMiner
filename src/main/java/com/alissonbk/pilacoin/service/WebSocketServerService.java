@@ -10,24 +10,18 @@ import org.springframework.stereotype.Service;
 public class WebSocketServerService {
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final UsuarioService usuarioService;
 
-    public WebSocketServerService(SimpMessagingTemplate messagingTemplate, UsuarioService usuarioService) {
+    public WebSocketServerService(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
-        this.usuarioService = usuarioService;
     }
 
     public void notifyPilaMinerado(final String message){
         ResponseMessage response = new ResponseMessage(message);
-        //System.out.println(response.getContent());
-        //notificationService.sendGlobalNotification();
         messagingTemplate.convertAndSend("/topic/mineracaoPila", response);
     }
 
     public void notifyValidacaoPila(final String message){
         ResponseMessage response = new ResponseMessage(message);
-        //System.out.println(response.getContent());
-        //notificationService.sendGlobalNotification();
         messagingTemplate.convertAndSend("/topic/validacaoPilaBloco", response);
     }
 
