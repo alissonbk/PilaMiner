@@ -40,11 +40,11 @@ public class TransferenciaService {
     * Pega o primeiro pilacoin que encontrar no banco e faz a transferencia
     * */
     @Transactional
-    public Boolean enviarParaChaveDestino(String chaveDestino) {
+    public String enviarParaChaveDestino(String chaveDestino) {
         var transacao = this.transacaoRepository
                 .findFirstByTipoPilaBlocoIsAndStatusTransferenciaIs(TipoPilaBloco.PILA_COIN,
                         StatusTransferencia.LIVRE);
-        if (transacao == null) return false;
+        if (transacao == null) return "Você não possuí pilacoins transferiveis!";
         List<Bloco> blocos = blocoClientHttp.getAllBlocos();
 
         var transferencia = new Transferencia();
@@ -63,9 +63,9 @@ public class TransferenciaService {
             this.transferenciaRepository.save(transferencia);
             transacao.setStatusTransferencia(StatusTransferencia.TRANSFERIDO);
             this.transacaoRepository.save(transacao);
-            return true;
+            return "sucesso";
         }
-        return false;
+        return "Falha ao transferir pilacoin!";
     }
 
     public String validarChave(String chave) {

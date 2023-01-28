@@ -1,6 +1,6 @@
 package com.alissonbk.pilacoin.service;
 
-import com.alissonbk.pilacoin.dto.NumPilasDTO;
+import com.alissonbk.pilacoin.dto.ResponseDTO;
 import com.alissonbk.pilacoin.model.*;
 import com.alissonbk.pilacoin.repository.TransacaoRepository;
 import com.alissonbk.pilacoin.util.UtilGenerators;
@@ -32,9 +32,16 @@ public class TransacaoService {
         webSocketServerService.notifyPilaMinerado(UtilGenerators.generateJSON(pilaCoin));
     }
 
-    public NumPilasDTO getNumPilas() {
-        var numPilas = new NumPilasDTO();
+    public ResponseDTO<Long> getNumPilas() {
+        var numPilas = new ResponseDTO<Long>();
         numPilas.setValor(this.repository.countDistinctByIdGreaterThanEqual(0L));
+        return numPilas;
+    }
+
+    public ResponseDTO<Long> getNumPilasTransferiveis() {
+        var numPilas = new ResponseDTO<Long>();
+        numPilas.setValor(this.repository
+                .countDistinctByIdGreaterThanEqualAndStatusTransferenciaIs(0L, StatusTransferencia.LIVRE));
         return numPilas;
     }
 }
