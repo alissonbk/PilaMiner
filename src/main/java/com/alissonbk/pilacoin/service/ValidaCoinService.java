@@ -31,12 +31,13 @@ public class ValidaCoinService {
     public String validaCoin(ValidaCoinRecieveDTO validaCoinRecieveDTO) {
         final PilaCoin pilaCoin = validaCoinRecieveDTO.toPilaCoin();
         final String pilaJson = UtilGenerators.generateJSON(pilaCoin);
-        final BigInteger numHash = UtilGenerators.generateHash(pilaJson);
+        final BigInteger numHash = UtilGenerators.generateHashBigInteger(pilaJson);
 
         if (Util.validateMineracao(numHash)) {
             final var pilaCoinClientHttp = new PilaCoinClientHttp();
             final String jsonToSend = createValidationJson(pilaCoin, pilaJson);
             boolean success = pilaCoinClientHttp.validateOtherUserCoin(jsonToSend);
+
             if (success) {
                 saveValidacaoPila(jsonToSend);
                 return "Pila coin de outro usuario validado com sucesso";
@@ -55,12 +56,12 @@ public class ValidaCoinService {
         try {
             validaCoinSendDTO.setTipo("PILA");
             validaCoinSendDTO.setNonce(pilaCoin.getNonce());
-            validaCoinSendDTO.setHashPilaBloco(UtilGenerators.generateHashByteArray(pilaJson));
+            validaCoinSendDTO.setHashPilaBloco(UtilGenerators.generateHash(pilaJson));
             validaCoinSendDTO.setChavePublica(KeyGeneratorService.getPublicKeyString());
-            final String jsonValidaCoinSendDTO = UtilGenerators.generateJSON(validaCoinSendDTO);
-            validaCoinSendDTO.setAssinatura(UtilGenerators.generateSignature(jsonValidaCoinSendDTO));
             final String json = UtilGenerators.generateJSON(validaCoinSendDTO);
-            return json;
+            validaCoinSendDTO.setAssinatura(UtilGenerators.generateSignature(json));
+            final String jsonFinal = UtilGenerators.generateJSON(validaCoinSendDTO);
+            return jsonFinal;
         } catch (RuntimeException e) {
             e.printStackTrace();
             return "";

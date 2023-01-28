@@ -37,6 +37,7 @@ public class PilaCoin implements Serializable {
         PilaCoin pilaCoin = (PilaCoin) o;
 
         if (!dataCriacao.equals(pilaCoin.dataCriacao)) return false;
+        if (this.nonceNumber == null) return false;
         return nonceNumber.equals(pilaCoin.nonceNumber);
     }
 

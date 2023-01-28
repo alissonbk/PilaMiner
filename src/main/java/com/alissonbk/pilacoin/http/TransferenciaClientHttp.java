@@ -1,5 +1,6 @@
 package com.alissonbk.pilacoin.http;
 
+import antlr.StringUtils;
 import com.alissonbk.pilacoin.util.ServerEndpoints;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
@@ -18,17 +19,21 @@ public class TransferenciaClientHttp {
     public boolean transferir(String transferenciaJson) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<?> response = null;
+        StringBuilder message = null;
         try {
             RequestEntity<String> requestEntity = RequestEntity.post(
                     new URL(ServerEndpoints.TRANSFER_PILA_COIN).toURI()
             ).contentType(MediaType.APPLICATION_JSON).body(transferenciaJson);
             response = restTemplate.exchange(requestEntity, String.class);
+        } catch (HttpClientErrorException e) {
+            System.out.println(e.getStatusText());
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
+        if (response == null) return false;
         System.out.println("Response Body Transferencia: " + response.getBody());
         System.out.println("Response Status Transferencia: " + response.getStatusCode());
-        if (response == null) return false;
+
         return response.getStatusCode().equals(HttpStatus.OK);
     }
 }

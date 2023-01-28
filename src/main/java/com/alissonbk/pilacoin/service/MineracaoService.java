@@ -80,7 +80,7 @@ public class MineracaoService {
                         PilaCoin pilaCoin = MineracaoConfiguration.FILA_COIN.poll();
                         pilaCoin.setNonce(pilaCoin.getNonceNumber().toString());
                         String pilaJson = UtilGenerators.generateJSON(pilaCoin);
-                        BigInteger numHash = UtilGenerators.generateHash(pilaJson);
+                        BigInteger numHash = UtilGenerators.generateHashBigInteger(pilaJson);
 
                         // Tentativas
                         if (Util.validateMineracao(numHash)) {

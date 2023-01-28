@@ -12,8 +12,8 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class UtilGenerators {
@@ -35,12 +35,12 @@ public class UtilGenerators {
         return json;
     }
 
-    public static BigInteger generateHash(String pilaJson) {
+    public static BigInteger generateHashBigInteger(String msg) {
         byte[] hash = null;
 
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            hash = md.digest(pilaJson.getBytes(StandardCharsets.UTF_8));
+            hash = md.digest(msg.getBytes(StandardCharsets.UTF_8));
         }catch (NoSuchAlgorithmException e) {
             System.out.println("Algoritmo para gerar HASH incorreto!");
             e.printStackTrace();
@@ -52,12 +52,12 @@ public class UtilGenerators {
         return new BigInteger(hash).abs();
     }
 
-    public static byte[] generateHashByteArray(String message) {
+    public static byte[] generateHash(String msg) {
         byte[] hash = null;
 
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            hash = md.digest(message.getBytes(StandardCharsets.UTF_8));
+            hash = md.digest(msg.getBytes(StandardCharsets.UTF_8));
         }catch (NoSuchAlgorithmException e) {
             System.out.println("Algoritmo para gerar HASH incorreto!");
             e.printStackTrace();
@@ -71,21 +71,24 @@ public class UtilGenerators {
 
     @SneakyThrows
     public static byte[] generateSignature(String json) {
-        Signature privateSignature = Signature.getInstance("SHA256withRSA");
+        var rsa = Cipher.getInstance("RSA");
         PrivateKey privateKey =
                 KeyFactory.getInstance("RSA")
                         .generatePrivate(new PKCS8EncodedKeySpec(KeyGeneratorService.getPrivateKeyBytes()));
 
-        privateSignature.initSign(privateKey);
-        privateSignature.update(json.getBytes(StandardCharsets.UTF_8));
-        byte[] signature = privateSignature.sign();
+        rsa.init(Cipher.ENCRYPT_MODE, privateKey);
 
-        return signature;
+        return rsa.doFinal(UtilGenerators.generateHash(json));
     }
 
     @SneakyThrows
     public static Map<String, Object> generateObjectFromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, Map.class);
+        try {
+            return mapper.readValue(json, Map.class);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyMap();
     }
 }
