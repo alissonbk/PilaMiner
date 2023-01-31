@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 @RestController
-@RequestMapping("transferencia")
+@RequestMapping("/v1/transferencia")
 public class TransferenciaController {
     private final TransferenciaService transferenciaService;
 

@@ -103,9 +103,8 @@ public class WebSocketClientSessionHandler implements StompSessionHandler {
 
     private void handleValidacaoPila(Object o) {
         ValidaCoinRecieveDTO pila = (ValidaCoinRecieveDTO) o;
-        //System.out.println("ValidaPilaCoinRecieved: " + pila);
         try {
-            System.out.println(validaCoinService.validaCoin(pila));
+            validaCoinService.validaCoin(pila);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }

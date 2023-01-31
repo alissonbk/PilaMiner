@@ -60,8 +60,7 @@ public class ValidaCoinService {
             validaCoinSendDTO.setChavePublica(KeyGeneratorService.getPublicKeyString());
             final String json = UtilGenerators.generateJSON(validaCoinSendDTO);
             validaCoinSendDTO.setAssinatura(UtilGenerators.generateSignature(json));
-            final String jsonFinal = UtilGenerators.generateJSON(validaCoinSendDTO);
-            return jsonFinal;
+            return UtilGenerators.generateJSON(validaCoinSendDTO);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return "";

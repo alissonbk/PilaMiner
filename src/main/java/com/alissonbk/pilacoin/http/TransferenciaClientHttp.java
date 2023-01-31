@@ -19,7 +19,6 @@ public class TransferenciaClientHttp {
     public boolean transferir(String transferenciaJson) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<?> response = null;
-        StringBuilder message = null;
         try {
             RequestEntity<String> requestEntity = RequestEntity.post(
                     new URL(ServerEndpoints.TRANSFER_PILA_COIN).toURI()
@@ -31,8 +30,6 @@ public class TransferenciaClientHttp {
             e.printStackTrace();
         }
         if (response == null) return false;
-        System.out.println("Response Body Transferencia: " + response.getBody());
-        System.out.println("Response Status Transferencia: " + response.getStatusCode());
 
         return response.getStatusCode().equals(HttpStatus.OK);
     }

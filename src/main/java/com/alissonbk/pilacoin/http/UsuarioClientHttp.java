@@ -73,16 +73,6 @@ public class UsuarioClientHttp {
         return null;
     }
 
-//    private String getUsers() {
-//        RestTemplate restTemplate = new RestTemplate();;
-//
-//        ResponseEntity<String> response
-//                = restTemplate.getForEntity(ServerConnect.SERVER_URL + "/usuario/all", String.class);
-//        System.out.println("getUsers Status Code: " + response.getStatusCode());
-//        System.out.println("getUSers body: " + response.getBody());
-//        return response.getBody();
-//    }
-
     @SneakyThrows
     public Usuario getUsuarioByChave(String chavePublica) {
         RestTemplate restTemplate = new RestTemplate();
@@ -99,8 +89,6 @@ public class UsuarioClientHttp {
         }
 
         if ( usuario != null && usuario.getBody() != null) {
-//            System.out.println(usuario);
-//            System.out.println("Usuario já está cadastrado com esta chave publica!");
             var u = new Usuario();
             u.setNome(usuario.getBody().getNome());
             u.setChavePublica(usuario.getBody().getChavePublica());

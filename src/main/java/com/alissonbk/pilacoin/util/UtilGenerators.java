@@ -41,7 +41,7 @@ public class UtilGenerators {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             hash = md.digest(msg.getBytes(StandardCharsets.UTF_8));
-        }catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             System.out.println("Algoritmo para gerar HASH incorreto!");
             e.printStackTrace();
         }
@@ -58,7 +58,7 @@ public class UtilGenerators {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             hash = md.digest(msg.getBytes(StandardCharsets.UTF_8));
-        }catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             System.out.println("Algoritmo para gerar HASH incorreto!");
             e.printStackTrace();
         }

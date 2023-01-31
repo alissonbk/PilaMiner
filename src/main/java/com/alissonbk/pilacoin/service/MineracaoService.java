@@ -105,7 +105,6 @@ public class MineracaoService {
                             //Envia pila coin
                             this.sendPilaCoin(pilaJson, pilaCoin);
                         } else {
-                            //N MINEROU
                             if (System.currentTimeMillis() - MineracaoConfiguration.TEMPO_INICIAL_TENTATIVA  > MineracaoConfiguration.PRINT_TIME_MS) {
                                 System.out.println("---------------Tentando---------------------------");
                                 System.out.println("Número de Mineracoes (Interno): " + MineracaoConfiguration.NUM_MINERACOES);

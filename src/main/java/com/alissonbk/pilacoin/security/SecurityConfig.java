@@ -57,7 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Rotas e suas configurações de acesso
                 .authorizeRequests()
                 .antMatchers("/v1/login").permitAll()
-                .anyRequest().permitAll();
+                .antMatchers("/v1/transferencia").authenticated()
+                .antMatchers("/v1/mineracao").authenticated()
+                .antMatchers("/v1/transacao").authenticated();
     }
 
     @Bean
